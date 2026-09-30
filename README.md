@@ -12,9 +12,12 @@
 [![License](https://img.shields.io/badge/Data%20License-Equinor%20Volve%20(CC%20BY--NC--SA%204.0)-orange?style=for-the-badge)](https://www.equinor.com/energy/volve-data-sharing)
 
 [🎯 The Problem](#-what-problem-does-this-solve) •
+[🛠️ Tech Stack](#%EF%B8%8F-tech-stack--tools-used) •
 [🏛️ How It Works](#%EF%B8%8F-how-does-the-whole-system-work-architecture) •
 [⚙️ The 5 Brains](#-the-5-smart-modules-inside-nwis) •
 [📊 Speed & Accuracy](#-how-fast-and-accurate-is-it) •
+[🔌 API Endpoints](#-api-endpoints-how-the-frontend-talks-to-the-backend) •
+[🔒 Security](#-security--safety-features) •
 [🚀 How to Run It](#-how-to-run-the-app) •
 [💰 Why It Matters](#-why-this-matters-for-oil-india)
 
@@ -27,6 +30,112 @@
 When you drill an oil well, you're drilling blind into the ground — you can't see what's coming next. But here's the thing: **nearby wells that were drilled in the past already went through the same underground layers.** If a nearby well had problems (like getting stuck, losing drilling fluid, or hitting high-pressure gas), then **your well will probably face the same problems** when it reaches that same underground layer.
 
 **eRTMAC-NWIS** is a software platform that **reads old drilling reports, understands the underground geology, watches the live drilling data, and warns engineers 50–100 meters BEFORE the drill reaches a dangerous zone.** Think of it like a "Google Maps for drilling" — but instead of showing traffic ahead on a road, it shows **underground hazards ahead of the drill bit.**
+
+---
+
+## 🛠️ Tech Stack & Tools Used
+
+Here's every technology and tool used to build this platform:
+
+### Backend (Server Side — The Brain)
+
+| Technology | What It Does | Why We Use It |
+|---|---|---|
+| **Python 3.11+** | The main programming language for all backend logic | Most popular language for data science and AI — huge library support |
+| **FastAPI** | The web framework that handles all incoming requests | Fastest Python web framework — auto-generates API docs, built-in data validation |
+| **Uvicorn** | The web server that runs FastAPI | Asynchronous server — handles many requests at the same time |
+| **Pydantic v2** | Checks that all incoming data is valid and correct | Catches bad input before it reaches the logic — prevents crashes |
+| **SQLAlchemy 2.0** | Talks to the database using Python code (instead of raw SQL) | Makes database operations safe and readable |
+| **Alembic** | Manages database structure changes over time | When we add a new table or column, Alembic upgrades the database smoothly |
+| **NumPy** | Fast math calculations (arrays, matrices) | Powers the 3D trajectory math (Minimum Curvature calculations) |
+| **SciPy** | Advanced scientific and statistical calculations | Used for geological interpolation and spatial algorithms |
+| **Pandas** | Data processing and table manipulation | Cleans, filters, and transforms drilling data efficiently |
+| **PyMuPDF (fitz)** | Reads and extracts text from PDF files | Processes scanned Daily Drilling Reports with bounding box coordinates |
+| **Pillow** | Image processing library | Processes scanned document images for OCR |
+| **python-jose** | Creates and verifies JSON Web Tokens (JWT) | Handles user authentication securely |
+| **passlib + bcrypt** | Hashes and verifies passwords | Stores passwords safely — even if the database is stolen, passwords can't be read |
+| **HTTPX** | Makes HTTP requests to external services | Communicates with the Gemini AI API |
+| **WebSockets** | Real-time two-way communication | Streams live rig sensor data to the dashboard without page refresh |
+| **python-pptx** | Creates PowerPoint presentations programmatically | Auto-generates pitch decks from data |
+| **Pytest** | Runs automated tests | Ensures all 177 tests pass before any deployment |
+
+### Frontend (What Engineers See on Screen)
+
+| Technology | What It Does | Why We Use It |
+|---|---|---|
+| **HTML5** | Structure of every web page | The universal standard for web content |
+| **Vanilla CSS** | Custom styling with dark industrial theme | Full control over the design — no framework bloat |
+| **Vanilla JavaScript (ES6+)** | All interactive behavior — charts, maps, forms | No framework dependency — fast loading, works everywhere |
+| **CSS Custom Properties** | Design tokens for consistent colors, spacing, typography | Change one variable → entire app theme updates instantly |
+| **CSS Grid & Flexbox** | Responsive page layouts | Pages look good on desktops, tablets, and phones |
+| **Fetch API** | Connects frontend to backend API | Modern browser-native way to send/receive data |
+
+### Database & Storage
+
+| Technology | What It Does | Why We Use It |
+|---|---|---|
+| **SQLite** | Lightweight local database (default mode) | Zero setup required — the entire database is a single file |
+| **PostgreSQL 16 + PostGIS** | Production-grade database with geospatial support | Handles millions of records, spatial queries for well location search |
+| **Redis 7** | In-memory cache for sessions and real-time data | Blazing fast read/write — perfect for live telemetry buffering |
+
+### DevOps & Deployment
+
+| Technology | What It Does | Why We Use It |
+|---|---|---|
+| **Docker** | Packages the entire app into a portable container | "Works on my machine" problems disappear — same everywhere |
+| **Docker Compose** | Runs the full stack (app + database + cache) with one command | `docker compose up` starts everything together |
+| **Multi-Stage Docker Build** | Separates build tools from the final image | Final container is smaller and more secure — no build tools inside |
+| **Non-Root Container** | App runs as an unprivileged user inside Docker | Even if hacked, the attacker has no admin access |
+| **Render.com** | Cloud hosting platform (free tier available) | Easy GitHub integration — push to `main` and it auto-deploys |
+| **Git & GitHub** | Version control and code hosting | Track every change, collaborate, and review code |
+
+### AI & Intelligence
+
+| Technology | What It Does | Why We Use It |
+|---|---|---|
+| **Google Gemini API** | Large language model for natural language understanding | Powers the AI Copilot — interprets drilling questions intelligently |
+| **OCR (via PyMuPDF)** | Reads text from scanned PDF images | Extracts knowledge from old hand-typed/scanned drilling reports |
+| **4-Mode Hybrid Search** | Combines 4 search strategies into one | Much more accurate than using just one search method |
+| **HMAC-SHA256** | Creates tamper-proof digital signatures | Every log entry is cryptographically signed — nobody can secretly edit it |
+
+### Architecture Diagram of the Tech Stack
+
+```mermaid
+flowchart TD
+    subgraph Frontend ["🖥️ Frontend (What Users See)"]
+        HTML["HTML5 Pages"]
+        CSS["Custom CSS\n(Dark Industrial Theme)"]
+        JS["Vanilla JavaScript\n(Charts, Maps, Forms)"]
+    end
+
+    subgraph Backend ["⚙️ Backend (The Brain)"]
+        FastAPI["FastAPI Web Framework"]
+        Services["31 Service Modules\n(Geology, AI, Telemetry, Security)"]
+        Math["NumPy + SciPy\n(3D Trajectory Math)"]
+        PDF["PyMuPDF\n(PDF Reading & OCR)"]
+    end
+
+    subgraph Data ["💾 Data Layer"]
+        SQLite["SQLite (Local Mode)"]
+        Postgres["PostgreSQL + PostGIS\n(Production Mode)"]
+        Redis["Redis Cache\n(Sessions & Live Data)"]
+    end
+
+    subgraph External ["🌐 External Services"]
+        Gemini["Google Gemini AI"]
+        WITSML["WITSML Rig Sensors"]
+    end
+
+    subgraph Deploy ["🚀 Deployment"]
+        Docker["Docker Container"]
+        Render["Render.com Cloud"]
+    end
+
+    Frontend --> Backend
+    Backend --> Data
+    Backend --> External
+    Backend --> Deploy
+```
 
 ---
 
@@ -448,6 +557,105 @@ If you're new to oil and gas or software, here's a quick guide:
 | **HMAC-SHA256** | A digital signature that proves a piece of data hasn't been tampered with. Like a wax seal on a letter. |
 | **Offset Well** | A well that was drilled nearby in the past. Its data helps predict what your current well will face. |
 | **eRTMAC** | Oil India's Real-Time Monitoring and Analytics Center — their 24/7 command center for all drilling operations. |
+
+---
+
+## 🔌 API Endpoints (How the Frontend Talks to the Backend)
+
+The backend exposes a REST API — here are the main groups of endpoints:
+
+| API Group | Endpoint Prefix | What It Does |
+|---|---|---|
+| **Wells** | `/api/v1/wells/` | Get well headers, locations, metadata |
+| **GeoCore (Underground Map)** | `/api/v1/geocore/` | 3D trajectories, formation tops, depth correlations |
+| **Chronos (Time Travel)** | `/api/v1/chronos/` | Replay past operations, run backtests, check temporal firewall |
+| **Sentinel (Report Reader)** | `/api/v1/sentinel/` | Search documents, get evidence passports, ask questions |
+| **Pulse (Live Sensors)** | `/api/v1/pulse/` | Real-time telemetry ingestion, sensor health, anomaly detection |
+| **Nexus (Command Center)** | `/api/v1/nexus/` | Fused dashboard data, danger scores, shift logs |
+| **Documents** | `/api/v1/documents/` | Upload, list, and manage drilling reports |
+| **Lookahead** | `/api/v1/lookahead/` | Get hazard predictions for the next 50–100m |
+| **Evidence** | `/api/v1/evidence/` | Retrieve evidence passports with source verification |
+| **Audit** | `/api/v1/audit/` | Tamper-proof activity logs with HMAC signatures |
+| **Similarity** | `/api/v1/similarity/` | Find wells with similar geology |
+| **Backtest** | `/api/v1/backtest/` | Run accuracy tests on historical data |
+| **Ask (AI Copilot)** | `/api/v1/ask/` | Ask natural language questions — get evidence-backed answers |
+| **Review** | `/api/v1/review/` | Peer review and approve system recommendations |
+
+> 💡 **Interactive API Docs:** When the app is running, visit `/docs` in your browser to see and test every endpoint live (powered by Swagger UI).
+
+---
+
+## 🔒 Security & Safety Features
+
+This platform handles safety-critical drilling operations, so security is built into every layer:
+
+| Feature | What It Does | Why It Matters |
+|---|---|---|
+| **Evidence-or-Silence Rule** | System refuses to answer if confidence is below 65% | Prevents dangerous wrong advice |
+| **Tamper-Proof Logs (HMAC-SHA256)** | Every log entry is digitally signed | Nobody can secretly edit the activity log |
+| **Data Provenance Ledger** | Every data file has a SHA-256 fingerprint | You can verify that no data file has been modified |
+| **Non-Root Docker Container** | App runs as an unprivileged user | Even if hacked, attacker has no admin access |
+| **Rate Limiting** | Limits how many requests a user can send per minute | Prevents abuse and overload |
+| **CORS Protection** | Only approved websites can talk to the API | Blocks unauthorized access from unknown origins |
+| **JWT Authentication** | Users log in with secure tokens | Sessions are encrypted and expire automatically |
+| **Password Hashing (bcrypt)** | Passwords are one-way encrypted | Even database admins can't read user passwords |
+| **Security Headers** | HTTP headers that prevent common web attacks | Protects against XSS, clickjacking, MIME sniffing |
+| **Input Validation (Pydantic v2)** | Every input is checked before processing | Blocks malformed or malicious data at the door |
+| **Temporal Firewall** | Blocks future data during backtesting | Ensures test results are honest — no data leakage |
+| **Health Checks** | Docker container monitors itself every 30 seconds | Auto-restarts if the app crashes |
+
+---
+
+## 📜 Helper Scripts (In the `scripts/` Folder)
+
+These are utility scripts for development, testing, and data management:
+
+| Script | What It Does |
+|---|---|
+| `benchmark_performance.py` | Runs speed tests on every module (50 iterations each) |
+| `run_lowo_backtest.py` | Runs the Leave-One-Well-Out accuracy test |
+| `evaluate_document_pipeline.py` | Tests the PDF reading and search accuracy |
+| `ingest_volve_data.py` | Imports the raw Equinor Volve drilling data into the database |
+| `ingest_authentic_documents.py` | Loads real PDF drilling reports into the search index |
+| `simulate_witsml_stream.py` | Simulates a live rig sensor feed for testing |
+| `generate_authentic_petroleum_docs.py` | Creates realistic test drilling reports |
+| `generate_pitch_deck.py` | Auto-generates a PowerPoint pitch presentation |
+| `generate_industrial_assets.py` | Creates visual assets for the UI |
+| `migrate_database.py` | Upgrades the database structure when models change |
+| `validate_postgres_hardening.py` | Checks PostgreSQL security settings |
+| `verify_audit_log.py` | Verifies that no audit log entries have been tampered with |
+
+---
+
+## 📚 Documentation (In the `docs/` Folder)
+
+We've created detailed documentation for every phase of development:
+
+| Document | What It Contains |
+|---|---|
+| **`OPERATIONAL_RUNBOOK.md`** | Step-by-step guide for deploying and running the system in a real oil field |
+| **`SIH_DEMONSTRATION_SCRIPT.md`** | A timed 8-minute walkthrough for the SIH live demo |
+| **`SIH_TECHNICAL_DEFENCE.md`** | Detailed answers for judges — math proofs, design decisions, comparisons |
+| **`PHASE_01` → `PHASE_09` Reports** | Complete engineering reports for each development phase — audit trails, architecture docs, security assessments, validation results |
+
+> 💡 **Total: 47 engineering documents** covering every design decision, algorithm choice, and security review.
+
+---
+
+## 👥 Team
+
+**Built by Team eRTMAC** for **Oil India Limited** under **Smart India Hackathon 2026** (Problem Statement SIH26121).
+
+---
+
+## 🤝 How to Contribute
+
+1. **Fork** this repository
+2. **Create** a new branch: `git checkout -b feature/your-feature-name`
+3. **Make** your changes
+4. **Run** the tests: `pytest backend/tests/ -v` (all 177 must pass)
+5. **Commit** and **push**: `git push origin feature/your-feature-name`
+6. **Open** a Pull Request with a clear description of what you changed and why
 
 ---
 
