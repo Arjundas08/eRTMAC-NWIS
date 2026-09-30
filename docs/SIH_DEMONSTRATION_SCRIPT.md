@@ -15,9 +15,9 @@
 Before calling the judges to the screen:
 1. Ensure FastAPI backend is running: `uvicorn backend.app.main:app --port 8000`
 2. Open Chrome/Edge in Full Screen (`F11`) with three pinned tabs:
-   - **Tab 1 (Primary):** `http://localhost:8000/nexus.html` (Unified Cross-Module Dashboard)
-   - **Tab 2 (Sentinel):** `http://localhost:8000/sentinel.html` (Document Intelligence & Evidence Graph)
-   - **Tab 3 (Chronos):** `http://localhost:8000/chronos.html` (Historical Replay Laboratory)
+   - **Tab 1 (Primary):** `http://localhost:8000/nexus.html` (Unified Command Center)
+   - **Tab 2 (Sentinel):** `http://localhost:8000/sentinel.html` (Verified AI Search & Evidence)
+   - **Tab 3 (Chronos):** `http://localhost:8000/chronos.html` (Drilling Time Machine & Replay Lab)
 3. Have terminal open in background to verify real API response times ($< 5\text{ms}$).
 4. Keep `SIH26121_eRTMAC_NWIS_Winning_Pitch.pptx` open in presentation view.
 
@@ -45,7 +45,7 @@ Before calling the judges to the screen:
 
 ---
 
-### [01:15 - 02:45] ACT 2: GEOCORE & STRATIGRAPHIC FORMATION CORRELATION
+### [01:15 - 02:45] ACT 2: ROCK LAYER MATCHER (GEOCORE) & 3D SUBSURFACE LAYERS
 **Action:** Switch to browser Tab 1 (`/nexus.html`), navigate to Geological Correlation section.  
 **Visual:** 3D Subsurface Trajectories and TVDSS Correlation View.
 
@@ -62,7 +62,7 @@ Before calling the judges to the screen:
 
 ---
 
-### [02:45 - 04:15] ACT 3: SENTINEL DOCUMENT AI & THE EVIDENCE PASSPORT
+### [02:45 - 04:15] ACT 3: VERIFIED AI SEARCH (SENTINEL) & THE EVIDENCE PASSPORT
 **Action:** Switch to browser Tab 2 (`/sentinel.html`).  
 **Interaction:** Type into the engineering query box:  
 `"Which offset wells experienced severe mud losses in the Hugin formation?"`  
@@ -84,7 +84,7 @@ Click **Execute Query**.
 
 ---
 
-### [04:15 - 05:45] ACT 4: CHRONOS HISTORICAL REPLAY & ZERO-LEAKAGE BACKTEST
+### [04:15 - 05:45] ACT 4: DRILLING TIME MACHINE (CHRONOS) & ZERO-LEAKAGE REPLAY
 **Action:** Switch to browser Tab 3 (`/chronos.html`).  
 **Interaction:** Select Well `NO-15/9-F-14`. Click **Start Historical Replay** at Depth 2,850m MD.
 
@@ -102,7 +102,7 @@ Click **Execute Query**.
 
 ---
 
-### [05:45 - 07:15] ACT 5: PULSE & NEXUS UNIFIED DRILLING INTELLIGENCE
+### [05:45 - 07:15] ACT 5: LIVE RIG MONITOR (PULSE) & UNIFIED COMMAND CENTER (NEXUS)
 **Action:** Switch to browser Tab 1 (`/nexus.html`).  
 **Visual:** Show live WITSML telemetry feed, Context Priority Index (CPI) gauge, and Operations Log.
 
