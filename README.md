@@ -3,7 +3,7 @@
 # 🛢️ eRTMAC-NWIS
 ### Nearby Wells Intelligence System for Oil India Limited
 **Smart India Hackathon 2026 | Problem Statement: SIH26121**  
-*An Evidence-First, Formation-Aware Drilling Intelligence & Human-in-the-Loop Decision Support Platform*
+*A smart drilling assistant that warns engineers about underground dangers — using real evidence from wells drilled in the past.*
 
 [![Tests](https://img.shields.io/badge/Tests-177%2F177%20Passed%20(100%25)-success?style=for-the-badge&logo=pytest)](file:///backend/tests/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
@@ -11,183 +11,295 @@
 [![Docker](https://img.shields.io/badge/Docker-Multi--Stage%20Non--Root-2496ED?style=for-the-badge&logo=docker)](file:///Dockerfile)
 [![License](https://img.shields.io/badge/Data%20License-Equinor%20Volve%20(CC%20BY--NC--SA%204.0)-orange?style=for-the-badge)](https://www.equinor.com/energy/volve-data-sharing)
 
-[🎯 The Problem](#-the-core-problem-in-plain-english) •
-[🏛️ Architecture](#-system-architecture--high-level-flow) •
-[⚙️ 5 Core Engines](#-the-5-core-engines-deep-dive) •
-[📊 Empirical Results](#-empirical-performance--validation-results) •
-[🚀 Quickstart](#-quickstart-guide-local--cloud) •
-[💰 ROI for Oil India](#-business-impact--roi-for-oil-india-limited)
+[🎯 The Problem](#-what-problem-does-this-solve) •
+[🏛️ How It Works](#%EF%B8%8F-how-does-the-whole-system-work-architecture) •
+[⚙️ The 5 Brains](#-the-5-smart-modules-inside-nwis) •
+[📊 Speed & Accuracy](#-how-fast-and-accurate-is-it) •
+[🚀 How to Run It](#-how-to-run-the-app) •
+[💰 Why It Matters](#-why-this-matters-for-oil-india)
 
 ---
 
 </div>
 
-## 📌 Executive Summary
+## 📌 What Is This Project? (In One Paragraph)
 
-Every year, oil and gas operators lose **hundreds of crores** to drilling surprises: **stuck pipe**, **lost circulation (mud loss)**, **wellbore kicks**, and **packoffs**. 
+When you drill an oil well, you're drilling blind into the ground — you can't see what's coming next. But here's the thing: **nearby wells that were drilled in the past already went through the same underground layers.** If a nearby well had problems (like getting stuck, losing drilling fluid, or hitting high-pressure gas), then **your well will probably face the same problems** when it reaches that same underground layer.
 
-**Oil India Limited (OIL)** has drilled thousands of wells over 60+ years. The solutions to almost all these hazards are already documented—buried inside **100,000+ scanned pages** of Daily Drilling Reports (DDRs), mud logs, and end-of-well reports.
-
-**eRTMAC-NWIS** connects Oil India's **24/7 Real-Time Monitoring and Analytics Center (eRTMAC)** with its **historical drilling memory**. It acts as an active, predictive shield over the drill bit, warning engineers **50 to 100 meters before** the bit penetrates hazardous subsurface formations.
+**eRTMAC-NWIS** is a software platform that **reads old drilling reports, understands the underground geology, watches the live drilling data, and warns engineers 50–100 meters BEFORE the drill reaches a dangerous zone.** Think of it like a "Google Maps for drilling" — but instead of showing traffic ahead on a road, it shows **underground hazards ahead of the drill bit.**
 
 ---
 
-## ❓ The Core Problem (In Plain English)
+## ❓ What Problem Does This Solve?
 
-Why do drilling engineers still hit hazards if the offset wells already experienced them? **Two fatal flaws in traditional software:**
+Oil India Limited has been drilling wells for **60+ years.** Over that time, they've created **100,000+ pages** of daily drilling reports, mud logs, and well reports. The answers to almost every drilling danger are **already written in these old documents** — but nobody has time to manually search through thousands of pages in the middle of a drilling operation.
 
-### 1. The "Measured Depth (MD) Trap" Across Dipping Rocks
+### Problem 1: Depth Numbers Are Misleading
+
+Imagine two wells, both drilled 1 km apart. Both reach a depth of 2,800 meters. You'd expect them to hit the same rock layer, right? **Wrong.**
+
 ```text
-Surface Elevation (KB)
+Ground Level
       |                                       |
    Well A                                  Well B
       |                                       |
-      |   (Measured Depth = 2,800m)           |   (Measured Depth = 2,800m)
+      |   (Pipe Length = 2,800m)              |   (Pipe Length = 2,800m)
       v                                       v
-[ Permeable Sandstone (LOSSES) ]        [ Overpressured Shale (KICK) ]
+[ Soft Sandstone → LOST MUD ]          [ Hard Shale → HIGH PRESSURE ]
       \                                       \
-       \_______________________________________\  <-- Geological Formation Dips at 12°
+       \_______________________________________\  ← The rock layers are TILTED
 ```
-* In folded or tilted subsurface geology, **the earth is not flat**. 
-* Two wells drilled 1,000 meters apart will hit the exact same formation at **drastically different depths**.
-* If software compares wells using surface distance and drill-pipe length (Measured Depth), **it compares apples to oranges**. An engineer expecting solid shale suddenly drills into fractured sandstone and loses all drilling fluid!
 
-### 2. The Danger of "Generic AI Hallucinations"
-* If you ask a generic chatbot or basic RAG system for drilling advice, it might hallucinate: *"Pump 1.35 SG mud weight."*
-* If the true safe limit was **1.15 SG**, pumping 1.35 SG will fracture the reservoir and cause an uncontrollable blowout.
-* **Our Rule:** In safety-critical oil and gas operations, **hallucination is unacceptable. Silence is infinitely safer than speculation.**
+Underground rock layers are not flat — they are folded, bent, and tilted. So a pipe length of 2,800m in Well A hits a completely different rock than 2,800m in Well B.
+
+**Old systems compare wells using pipe length (called "Measured Depth").** This is like comparing two roads by distance — ignoring that one road goes uphill and the other goes into a valley. You end up comparing apples to oranges.
+
+**Our system fixes this** by converting all depths to a universal reference point: **True Vertical Depth Below Sea Level (TVDSS).** This way, we always compare the same actual rock layer, no matter how the well was drilled.
+
+### Problem 2: Generic AI Can Guess Wrong — And That's Dangerous
+
+If you ask a regular AI chatbot for drilling advice, it might confidently say: *"Use 1.35 SG mud weight."* But if the actual safe limit was **1.15 SG**, then pumping 1.35 SG **would crack the rock and cause a blowout** — one of the most dangerous things that can happen on a rig.
+
+**Our rule: If the system doesn't have real evidence from real wells, it stays silent.** We'd rather give no answer than a wrong answer. This is called our **"Evidence-or-Silence" rule.**
+
+> 💡 **In simple words:** The system only speaks when it has proof. No guessing. No making things up.
 
 ---
 
-## 🏛️ System Architecture & High-Level Flow
+## 🏛️ How Does the Whole System Work? (Architecture)
 
-NWIS combines **rig telemetry**, **3D spatial geology**, and **document intelligence** into a single deterministic decision engine:
+The system has **4 layers**, each building on the one below:
 
 ```mermaid
 flowchart TD
-    subgraph DataSources [" 1. Raw Industrial Data Sources "]
-        WITSML["📡 Live Rig Telemetry<br>(WITSML 1.4.1 / 100 Hz)<br>SPP, Torque, ROP, Flow"]
-        PDFs["📄 Historical Archives<br>1,759 Real Volve DDRs<br>Mud Logs, Composite Tops"]
-        Surveys["🧭 Directional Surveys<br>MWD Stations (MD, Inc, Azi)<br>KB Elevation, Northing/Easting"]
+    subgraph Layer1 ["🔌 Layer 1: Where Data Comes From"]
+        WITSML["📡 Live Rig Sensors<br>(Pressure, Torque, Speed, Flow)<br>Updated every second"]
+        PDFs["📄 Old Drilling Reports<br>(1,759 real PDF reports from the<br>Equinor Volve oil field)"]
+        Surveys["🧭 Well Path Data<br>(Direction & angle measurements<br>taken while drilling)"]
     end
 
-    subgraph CoreEngines [" 2. The NWIS Core Intelligence Subsystems "]
+    subgraph Layer2 ["🧠 Layer 2: The 5 Smart Modules"]
         direction TB
-        GeoCore["🛰️ GeoCore (Subsurface Engine)<br>• Sawaryn Minimum Curvature<br>• TVDSS Depth Normalization<br>• 50–100m Lookahead Horizon Radar"]
-        Pulse["⚡ Pulse (Real-Time Rig Telemetry)<br>• Canonical Unit Conversion<br>• Sensor Health & Quality Decay<br>• Stuck Pipe & Packoff Anomaly Alarms"]
-        Sentinel["🛡️ Sentinel (Document AI)<br>• Authentic OCR & Bounding Boxes<br>• 4-Mode Stratigraphic Retrieval<br>• Strict Evidence-or-Silence Invariant"]
-        Chronos["⏳ Chronos (Historical Replay Lab)<br>• Point-in-Time Temporal Firewall<br>• Zero Future-Leakage Backtest<br>• 75% Empirical LOWO Precision"]
+        GeoCore["🗺️ Underground Map Builder<br>(GeoCore)<br>• Calculates true depth below sea level<br>• Finds which rock layer the drill is in<br>• Looks 50-100m ahead of the drill"]
+        Pulse["⚡ Live Sensor Monitor<br>(Pulse)<br>• Reads live rig sensor data<br>• Checks if sensors are healthy<br>• Detects danger patterns in real-time"]
+        Sentinel["🔍 Smart Report Reader<br>(Sentinel)<br>• Reads old PDF reports using OCR<br>• Searches for relevant past events<br>• Provides proof for every answer"]
+        Chronos["⏳ Time-Travel Tester<br>(Chronos)<br>• Replays past drilling events<br>• Tests if warnings would have worked<br>• Proves accuracy with real data"]
     end
 
-    subgraph FusionLayer [" 3. Unified Intelligence Fusion (NEXUS) "]
-        Nexus["🧠 NWIS NEXUS BRAIN<br>• Context Priority Index (CPI Heuristic)<br>• Multi-Well Stratigraphic Cross-Correlation<br>• Cryptographic Tamper-Proof Operations Log (HMAC-SHA256)"]
+    subgraph Layer3 ["🎯 Layer 3: The Central Brain"]
+        Nexus["🧠 Command Center (Nexus)<br>• Combines all 4 modules into one view<br>• Ranks dangers by urgency (0-100 score)<br>• Creates tamper-proof activity logs"]
     end
 
-    subgraph Presentation [" 4. Industrial Human-in-the-Loop Cockpits "]
-        UI1["🖥️ Rig-Floor Cockpit (pulse.html)"]
-        UI2["🗺️ 3D Trajectory & Tops Radar (geocore.html)"]
-        UI3["🔍 Document Evidence Graph (sentinel.html)"]
-        UI4["⏱️ Time-Travel Replay Lab (chronos.html)"]
-        UI5["📊 Executive Fusion Dashboard (nexus.html)"]
+    subgraph Layer4 ["🖥️ Layer 4: What Engineers See on Screen"]
+        UI1["📊 Main Dashboard — see everything at once"]
+        UI2["🗺️ Underground Map — 3D well paths & rock layers"]
+        UI3["🔍 Report Search — ask questions, get proven answers"]
+        UI4["⏳ Replay Lab — watch past drilling replayed step by step"]
+        UI5["⚡ Live Sensors — real-time gauges and alerts"]
     end
 
-    DataSources --> CoreEngines
-    CoreEngines --> FusionLayer
-    FusionLayer --> Presentation
+    Layer1 --> Layer2
+    Layer2 --> Layer3
+    Layer3 --> Layer4
 ```
+
+**In simple words:**
+1. **Data comes in** → from live rig sensors, old PDF reports, and well path measurements.
+2. **5 smart modules process it** → they understand the geology, read documents, monitor live data, and test accuracy.
+3. **The central brain combines everything** → it decides what's most urgent and creates a single view.
+4. **Engineers see clear dashboards** → with warnings, maps, evidence, and live sensor gauges.
 
 ---
 
-## ⚙️ The 5 Core Engines (Deep Dive)
+## ⚙️ The 5 Smart Modules Inside NWIS
 
-### 🛰️ 1. GeoCore: Subsurface Trajectory & Stratigraphic Engine
-* **What it does:** Converts raw drill pipe length (MD) into **True Vertical Depth Subsea (TVDSS)**:
-  $$\text{TVDSS} = \text{TVD} - \text{Kelly Bushing Elevation}$$
-* **Mathematical Rigor:** Implements the official **Sawaryn & Thorogood (2005) Minimum Curvature Method** (ISO 19789 / SPE standard) between directional MWD stations to calculate 3D coordinates $(X, Y, Z)$ and Dogleg Severity (DLS).
-* **Look-Ahead Horizon Radar:** Instead of showing what is at the bit right now, GeoCore projects a forward cone **50 to 100 meters ahead of the bit**. At typical drilling speeds ($10\text{--}20\text{ m/hr}$), this gives the rig crew **2.5 to 10 hours of advance warning** before penetrating dangerous formations.
+### 🗺️ Module 1: Underground Map Builder (GeoCore)
+
+**What it does in plain words:** It figures out the drill bit's exact position underground in 3D — and tells you what rock layers are coming up next.
+
+**Why this is important:** When you drill, the pipe doesn't go straight down — it curves and bends. So the length of pipe in the ground (say 3,000 meters) doesn't mean the drill is 3,000 meters deep. It could be only 2,700 meters deep because the well path curved sideways.
+
+**How it works (step by step):**
+1. Takes the raw pipe length measurements
+2. Uses an industry-standard math formula (called "Minimum Curvature Method") to calculate the drill's exact 3D position underground
+3. Subtracts the height of the rig above sea level → now we know the **true depth below sea level**
+4. Compares this depth against known rock layers from nearby wells
+5. **Looks 50–100 meters ahead** of the current position to warn about upcoming dangers
 
 ```mermaid
 graph LR
-    A["Raw MD (Drillstring)"] --> B["Sawaryn Min Curvature Math"]
-    B --> C["True Vertical Depth (TVD)"]
-    C --> D["Subtract KB Elevation"]
-    D --> E["TVDSS (Standard Subsea)"]
-    E --> F["Correlate Against Formation Marker Tops"]
-    F --> G["50–100m Forward Look-Ahead Radar"]
+    A["📏 Raw Pipe Length"] --> B["🧮 3D Position Math"]
+    B --> C["📍 True Depth (TVD)"]
+    C --> D["🌊 Subtract Rig Height"]
+    D --> E["🎯 Depth Below Sea Level"]
+    E --> F["🗺️ Match to Rock Layers"]
+    F --> G["⚠️ 50-100m Ahead Warning"]
 ```
 
----
-
-### ⏳ 2. Chronos: The Time-Travel Replay Laboratory
-* **What it does:** Proves the system works by replaying past drilling operations step-by-step.
-* **The Temporal Firewall (`PointInTimeFirewall`):**
-  When replaying an event on **September 14, 2008**, the database strictly quarantines all records created after that second. **Zero future information leakage.**
-* **Leave-One-Well-Out (LOWO) Back-Testing:**
-  We back-tested the system on real Equinor Volve wells. When evaluating target well `15/9-F-14`, the system was completely blind to wells drilled after it.
-* **Result:** Achieved **75.0% operational precision** with an average advance warning distance of **84.1 meters ahead of kicks and stuck pipes**.
+> 💡 **Analogy:** Imagine driving on a hilly road. Your car's odometer says 10 km, but your actual altitude is different from someone who drove 10 km on a flat road. GeoCore calculates your actual altitude, not just the distance traveled.
 
 ---
 
-### 🛡️ 3. Sentinel: Document AI & The Evidence Passport
-* **What it does:** Extracts knowledge from messy, scanned daily drilling PDF reports.
-* **4-Mode Hybrid Search:** Combines Stratigraphic Tops + Geospatial Offset Radius + IADC Hazard Taxonomy + Dense Semantic Vectors.
-* **The Evidence Passport:** Every answer is backed by a verifiable passport:
-  - Exact wellbore name (e.g. `NO-15/9-F-12`)
-  - Original report title and date (e.g. `DDR Report #44`)
-  - Page number and bounding box coordinates `[x0, y0, x1, y1]` where OCR extracted the text
-  - SHA-256 cryptographic hash of the source PDF
-* **The "Evidence-or-Silence" Contract:**
-  If retrieved documents do not meet confidence thresholds, **the system refuses to guess**. It outputs:
-  > `"NO HISTORICAL EVIDENCE DOCUMENTED IN THIS STRATUM."`
+### ⏳ Module 2: Time-Travel Tester (Chronos)
+
+**What it does in plain words:** It replays past drilling operations day-by-day to prove that our warning system actually works — using real historical data.
+
+**Why this is important:** Anyone can *claim* their software detects dangers. We need to *prove* it. Chronos does this by going back in time and testing: "If this system had existed back in 2008, would it have correctly warned about the problems?"
+
+**How it works (step by step):**
+1. Picks a well that was drilled in the past (e.g., Well F-14, drilled in 2008)
+2. Sets a **strict time barrier** — the system can only see reports and data from BEFORE each test day
+3. Asks the system: "What dangers lie ahead for this well?"
+4. Compares the system's warnings against what actually happened
+5. **Hides the target well's own data** — so the system can only learn from OTHER nearby wells (this is called "Leave-One-Well-Out" testing)
+
+**Result:** The system correctly predicted dangers with **75% accuracy** and gave warnings **84 meters before** the drill reached the problem zone on average.
+
+> 💡 **Analogy:** It's like testing a weather forecast app by going back to 2008 and checking: "Would it have correctly predicted the storms?" — without letting it cheat by looking at the actual weather data from that day.
 
 ```mermaid
 flowchart LR
-    Q["Petroleum Query"] --> Planner["Sentinel Query Planner"]
-    Planner --> Filter["Formation & Radius Hard Filter"]
-    Filter --> Search["4-Mode Hybrid Retrieval"]
-    Search --> Check{"Confidence >= 0.65?"}
-    Check -- Yes --> Answer["Verified Answer + Evidence Passport + Bounding Boxes"]
-    Check -- No --> Abstain["ABSTAIN: 'No verifiable historical evidence'"]
+    A["📅 Pick a past date"] --> B["🔒 Hide all future data"]
+    B --> C["❓ Ask: 'What dangers ahead?'"]
+    C --> D["✅ Compare with what really happened"]
+    D --> E["📊 Score: 75% accuracy, 84m warning"]
 ```
 
 ---
 
-### ⚡ 4. Pulse: Real-Time Telemetry Engine
-* **What it does:** Ingests live WITSML drilling streams at **up to 100 Hz** (Standpipe Pressure, Torque, ROP, Flow In/Out, Pit Volume).
-* **Data Quality Decay Guard:** Real rig sensors drop packets, drift, or freeze. Pulse evaluates data freshness:
-  - *HEALTHY:* Continuous telemetry stream.
-  - *DEGRADED:* Sensor values static or dropping frames (suppresses nuisance alarms).
-  - *OFFLINE:* Telemetry lost (triggers fail-safe alert).
-* **Hazard Pattern Detection:**
-  - **Stuck Pipe Warning:** Rising torque trend + decreasing ROP + steady pump pressure.
-  - **Packoff Warning:** Sudden spike in Standpipe Pressure + erratic torque while circulating.
-  - **Kick Alert:** Pit volume gain + flow out exceeds flow in.
+### 🔍 Module 3: Smart Report Reader (Sentinel)
+
+**What it does in plain words:** It reads thousands of old drilling PDF reports and answers questions about what happened in nearby wells — with full proof of where the answer came from.
+
+**Why this is important:** Oil companies have decades of drilling reports sitting in filing cabinets and PDF folders. The knowledge is there, but nobody has time to read through all of them during a live drilling operation. Sentinel does this in seconds.
+
+**How it works (step by step):**
+1. Takes old PDF reports and reads them using OCR (Optical Character Recognition — like scanning a document)
+2. Breaks the text into small searchable pieces
+3. When an engineer asks a question (e.g., "Were there any stuck pipe events near formation X?"), it searches using **4 different methods at once:**
+   - 🗺️ **By rock layer** — only looks at reports from the same underground formation
+   - 📍 **By location** — only looks at reports from wells within a certain distance
+   - 🏷️ **By hazard type** — matches the type of danger (stuck pipe, kick, mud loss, etc.)
+   - 🔤 **By meaning** — understands the meaning of the question, not just exact words
+4. Each answer comes with an **Evidence Passport** — a full receipt showing:
+   - Which well the info came from
+   - Which report and which page
+   - The exact spot on the page where the text was found
+   - A digital fingerprint (hash) of the original PDF to prove it hasn't been changed
+
+**The "Evidence-or-Silence" Rule:** If the system can't find strong enough evidence (confidence below 65%), **it refuses to answer** and says:
+> *"No historical evidence documented for this question."*
+
+```mermaid
+flowchart LR
+    Q["❓ Engineer's Question"] --> Plan["📋 Search Planner"]
+    Plan --> Filter["🔍 Filter by rock layer & distance"]
+    Filter --> Search["🔎 4-Way Search"]
+    Search --> Check{"🎯 Confidence ≥ 65%?"}
+    Check -- Yes --> Answer["✅ Answer + Full Evidence Proof"]
+    Check -- No --> Silent["🚫 'No verified evidence found'"]
+```
+
+> 💡 **Analogy:** Imagine having a super-fast librarian who reads every report in seconds, but never makes up answers. If the librarian can't find proof, they say "I don't know" instead of guessing.
 
 ---
 
-### 🧠 5. Nexus: Unified Intelligence Brain & Cockpit
-* **What it does:** Fuses all 4 subsystems into a single real-time decision dashboard for the drilling superintendent.
-* **Context Priority Index (CPI):** A deterministic, explainable heuristic ranking operational urgency (0 to 100):
-  $$\text{CPI} = 0.40 \times \text{HistorySeverity} + 0.30 \times \text{ActiveAdvisories} + 0.30 \times \text{TelemetryQuality}$$
-* **Tamper-Evident Operations Log:** Every shift handover, query, and advisory resolution is cryptographically signed using **HMAC-SHA256** for regulatory compliance.
+### ⚡ Module 4: Live Sensor Monitor (Pulse)
+
+**What it does in plain words:** It watches the rig's live sensors in real-time and sounds the alarm when sensor patterns suggest something dangerous is about to happen.
+
+**Why this is important:** Modern drilling rigs generate tons of live data — pressure readings, torque values, drilling speed, mud flow rates — all updated many times per second. A human can't watch all these numbers simultaneously. Pulse watches them 24/7 and spots danger patterns instantly.
+
+**What it monitors:**
+| Sensor | What It Measures | Example Danger Signal |
+|---|---|---|
+| **Standpipe Pressure (SPP)** | Pressure of mud being pumped down | Sudden spike → something is blocking the flow |
+| **Torque** | How hard the drill is twisting | Rising torque → drill is getting stuck in rock |
+| **Rate of Penetration (ROP)** | How fast the drill moves forward | Dropping ROP → drill is struggling |
+| **Flow In/Out** | Mud going down vs. mud coming up | More mud coming up → underground fluid entering the well (KICK) |
+| **Pit Volume** | Total mud volume in the surface tanks | Unexpected rise → gas or water pushing mud out |
+
+**Sensor Health Check:** Before raising any alarm, Pulse first checks if the sensor data is reliable:
+- 🟢 **Healthy** — sensors are sending good data
+- 🟡 **Degraded** — sensors are freezing or dropping data (alarms are suppressed to avoid false warnings)
+- 🔴 **Offline** — sensors have stopped responding (triggers a safety alert)
+
+**Danger Patterns It Detects:**
+- ⚠️ **Stuck Pipe Warning:** Torque going up + drilling speed going down + pressure staying the same
+- ⚠️ **Blockage Warning:** Sudden pressure spike + erratic torque while circulating
+- 🚨 **Kick Alert:** Mud tanks gaining volume + more fluid flowing out than going in
 
 ---
 
-## 📊 Empirical Performance & Validation Results
+### 🧠 Module 5: Command Center (Nexus)
 
-Every benchmark was measured on real hardware across 50 iterations with warm-up passes (`scripts/benchmark_performance.py`):
+**What it does in plain words:** It combines information from ALL the other modules into a single screen that shows the most important things first — like a control tower at an airport.
 
-| Pipeline Workload | Mean Latency | p50 Latency | Throughput | Industrial Real-Time SLA | Status |
-|---|---|---|---|---|:---:|
-| **Pulse Unit Normalization** | 0.02 ms | 0.02 ms | **44,436 ops/s** | $< 5.0\text{ ms}$ | ✅ PASSED |
-| **Pulse Sensor Quality Check** | 0.01 ms | 0.01 ms | **104,275 ops/s** | $< 2.0\text{ ms}$ | ✅ PASSED |
-| **GeoCore 3D Trajectory Math** | 0.06 ms | 0.05 ms | **16,186 ops/s** | $< 10.0\text{ ms}$ | ✅ PASSED |
-| **TVDSS Formation Correlation** | 0.54 ms | 0.49 ms | **1,845 ops/s** | $< 50.0\text{ ms}$ | ✅ PASSED |
-| **Sentinel Hybrid Retrieval** | 0.46 ms | 0.42 ms | **2,195 ops/s** | $< 200.0\text{ ms}$ | ✅ PASSED |
-| **Nexus Cross-Module Fusion** | 5.10 ms | 4.88 ms | **196 ops/s** | $< 100.0\text{ ms}$ | ✅ PASSED |
-| **HMAC Event Authentication** | 0.05 ms | 0.04 ms | **20,626 ops/s** | $< 1.0\text{ ms}$ | ✅ PASSED |
+**Why this is important:** Each module gives useful information, but an engineer doesn't want to switch between 5 different screens. Nexus brings everything together and ranks it by urgency.
 
-### Automated Test Coverage
+**How it ranks urgency (the Danger Score):**
+
+The system calculates a **Danger Score from 0 to 100** for every situation:
+
+$$\text{Danger Score} = 0.40 \times \text{How bad was it in past wells} + 0.30 \times \text{Current active warnings} + 0.30 \times \text{Sensor data quality}$$
+
+- **Score 0–30:** 🟢 Everything looks normal
+- **Score 31–60:** 🟡 Pay attention — some warning signs
+- **Score 61–100:** 🔴 Take action now — high danger
+
+**Tamper-Proof Activity Log:** Every decision, every query, and every shift handover is saved with a digital signature (HMAC-SHA256). This means nobody can secretly edit the log — if anyone tries to change a record, the digital signature won't match, and the system will flag it.
+
+> 💡 **Analogy:** Nexus is like the dashboard of a car — it combines the speedometer, fuel gauge, engine temperature, and GPS navigation into one view. You don't need to pop open the hood to know something's wrong.
+
+---
+
+## 🖥️ What Do the Screens Look Like?
+
+Here's what each page in the app does:
+
+| Screen | File | What You See |
+|---|---|---|
+| **🏠 Welcome Page** | `index.html` | Landing page with an overview and quick links to all features |
+| **📊 Main Dashboard** | `nexus.html` | Everything combined — danger scores, active warnings, sensor status, recent events |
+| **🗺️ Underground Map** | `geocore.html` | 3D view of well paths, rock layers, and the look-ahead danger zone |
+| **🔍 Report Search** | `sentinel.html` | Ask questions about past wells — get proven answers with evidence |
+| **⚡ Live Sensors** | `pulse.html` | Real-time gauges for pressure, torque, speed, and flow |
+| **⏳ Replay Lab** | `chronos.html` | Replay a past drilling operation day-by-day to test the system |
+| **📡 Nearby Wells Finder** | `radar.html` | Find wells near your current location with a radius search |
+| **🔬 Rock Layer Viewer** | `stratigraphy.html` | See which rock layers exist at different depths |
+| **⚠️ Ahead-of-Bit Scanner** | `lookahead.html` | See what dangers the drill will face in the next 50–100 meters |
+| **📝 Report Vault** | `documents.html` | Browse and search all uploaded drilling reports |
+| **🤖 AI Assistant** | `copilot.html` | Chat with the AI — get answers based strictly on evidence |
+| **📈 Accuracy Report** | `backtest.html` | See the system's test results — how accurately it predicted past events |
+
+---
+
+## 📊 How Fast and Accurate Is It?
+
+We tested every part of the system on real hardware, running each test **50 times** to get reliable numbers:
+
+### Speed Test Results
+
+| What's Being Tested | Average Time | How Many Per Second | Speed Target | Result |
+|---|---|---|---|:---:|
+| **Converting sensor units** | 0.02 ms | 44,436/sec | Under 5 ms | ✅ Pass |
+| **Checking sensor health** | 0.01 ms | 104,275/sec | Under 2 ms | ✅ Pass |
+| **Calculating 3D well position** | 0.06 ms | 16,186/sec | Under 10 ms | ✅ Pass |
+| **Matching depth to rock layers** | 0.54 ms | 1,845/sec | Under 50 ms | ✅ Pass |
+| **Searching old reports** | 0.46 ms | 2,195/sec | Under 200 ms | ✅ Pass |
+| **Combining all modules** | 5.10 ms | 196/sec | Under 100 ms | ✅ Pass |
+| **Signing the activity log** | 0.05 ms | 20,626/sec | Under 1 ms | ✅ Pass |
+
+> 💡 **What this means:** Every operation completes in under 6 milliseconds (0.006 seconds). The system is fast enough to work with live sensor data arriving 100 times per second.
+
+### Accuracy Test Results
+
+- **177 automated tests — 100% passing ✅**
+- **75% accuracy** in predicting real drilling hazards from past wells
+- **84 meters average advance warning** before the drill reaches a danger zone
+- **80% fewer false alarms** compared to basic distance-matching systems
+
+### Full Test Report
 ```text
 ============================= test session starts =============================
 collected 177 items
@@ -215,102 +327,147 @@ backend/tests/test_stratigraphy.py .....               [100%]
 
 ---
 
-## 🚀 Quickstart Guide (Local & Cloud)
+## 🚀 How to Run the App
 
-### Option A: Run Locally (Standalone Mode)
+### Option A: Run on Your Computer
+
 ```bash
-# 1. Clone the repository
+# Step 1: Download the code
 git clone https://github.com/Arjundas08/eRTMAC-NWIS.git
 cd eRTMAC-NWIS
 
-# 2. Install dependencies
+# Step 2: Install what the app needs
 pip install -r requirements.txt
 
-# 3. Start the application
+# Step 3: Start the app
 uvicorn backend.app.main:app --port 8000
 ```
-Open your browser:
-* **Nexus Cockpit:** [http://localhost:8000/nexus.html](http://localhost:8000/nexus.html)
-* **Sentinel Workspace:** [http://localhost:8000/sentinel.html](http://localhost:8000/sentinel.html)
-* **Chronos Laboratory:** [http://localhost:8000/chronos.html](http://localhost:8000/chronos.html)
-* **Interactive API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+
+Then open your browser and go to:
+- **Main Dashboard:** [http://localhost:8000/nexus.html](http://localhost:8000/nexus.html)
+- **Report Search:** [http://localhost:8000/sentinel.html](http://localhost:8000/sentinel.html)
+- **Replay Lab:** [http://localhost:8000/chronos.html](http://localhost:8000/chronos.html)
+- **API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs) ← interactive page where you can test the backend directly
 
 ---
 
-### Option B: Run with Docker Compose
+### Option B: Run with Docker (Recommended for Teams)
+
 ```bash
 docker compose up -d --build
 ```
-Boots the hardened multi-stage container with non-root security (`appuser:10001`), resource caps, and Redis session caching.
+
+This starts the app in a secure container with automatic security settings (non-root user, memory limits, session caching).
 
 ---
 
-### Option C: 1-Click Cloud Deployment (Render.com)
-1. Go to **[Render.com](https://render.com)** → **New Web Service**.
-2. Select your repository: `Arjundas08/eRTMAC-NWIS`.
+### Option C: Deploy to the Cloud (Render.com — Free Tier Available)
+
+1. Go to **[render.com](https://render.com)** → click **New Web Service**
+2. Connect your GitHub and select `Arjundas08/eRTMAC-NWIS`
 3. Set **Build Command:** `pip install -r requirements.txt`
 4. Set **Start Command:** `uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`
-5. Add Environment Variables:
-   - `ENVIRONMENT` = `production`
-   - `DATABASE_URL` = `sqlite:///./data/processed/nwis_local.db`
-   - `GEMINI_API_KEY` = *(Your Gemini Key)*
+5. Add these Environment Variables:
+   | Variable | Value |
+   |---|---|
+   | `ENVIRONMENT` | `production` |
+   | `DATABASE_URL` | `sqlite:///./data/processed/nwis_local.db` |
+   | `GEMINI_API_KEY` | *(Your Google Gemini API Key)* |
 
 ---
 
-## 💰 Business Impact & ROI for Oil India Limited
+## 💰 Why This Matters for Oil India
 
-| Metric / Scenario | Financial Impact |
+| What Happens | The Cost |
 |---|---|
-| **Cost of 1 Stuck Pipe Incident** | **₹1.5 Crore to ₹5.0 Crores** (Fishing, sidetracking, 7–14 days of rig NPT) |
-| **Rig Operating Expense (Assam/Rajasthan)** | **₹25 Lakhs per hour** |
-| **NWIS Advance Warning Lead Time** | **84.1 meters** (~3 to 8 hours of drilling advance lead time) |
-| **False Alarm Reduction** | **80% fewer false alerts** compared to raw distance matching |
-| **Breakeven Threshold** | Preventing **just ONE severe stuck pipe event** funds the entire NWIS platform for over **5 years**. |
+| **1 stuck pipe event** | **₹1.5 to ₹5 Crores** lost (7–14 days of rig downtime, fishing operations, possible sidetrack drilling) |
+| **Rig running cost** | **₹25 Lakhs per hour** (Assam/Rajasthan operations) |
+| **NWIS warning lead time** | **84 meters ahead** (~3 to 8 hours of advance warning) |
+| **False alarm reduction** | **80% fewer false alerts** compared to basic systems |
+| **Break-even** | **Preventing just ONE major stuck pipe event pays for the ENTIRE system for 5+ years** |
+
+> 💡 **The bottom line:** This system doesn't need to be perfect. If it prevents even ONE serious drilling accident, it saves Oil India crores of rupees and — most importantly — keeps rig workers safe.
 
 ---
 
-## 📜 Repository Structure
+## 📂 What's Inside This Repository?
 
 ```text
-ertmac-nwis/
-├── backend/
+eRTMAC-NWIS/
+│
+├── backend/                    ← All the server-side code (the "brain")
 │   ├── app/
-│   │   ├── api/v1/         # Typed REST endpoints (wells, geocore, chronos, sentinel, pulse, nexus)
-│   │   ├── core/           # Security headers, rate limiting, request tracing, audit logging
-│   │   ├── db/             # SQLAlchemy models & dual-engine database connectors
-│   │   ├── schemas/        # Pydantic v2 validation contracts
-│   │   └── services/       # Stratigraphic math, trajectory interpolation, hybrid retrieval
-│   └── tests/              # 17 automated test suites (177 tests, 100% passing)
-├── config/                 # Environment settings & configuration models
+│   │   ├── api/v1/            ← Web API endpoints (how the front-end talks to the brain)
+│   │   ├── core/              ← Security, rate limiting, request tracking, audit logs
+│   │   ├── db/                ← Database models and connections
+│   │   ├── schemas/           ← Data validation rules (makes sure inputs are valid)
+│   │   └── services/          ← The actual smart logic (geology math, document search, etc.)
+│   └── tests/                 ← 17 test files, 177 tests (all passing ✅)
+│
+├── config/                    ← Settings files for different environments
+│
 ├── data/
-│   ├── processed/          # Pre-ingested SQLite database (nwis_local.db) & evaluation outputs
-│   ├── raw/volve/          # Verified Equinor Volve dataset (well headers, tops, surveys, DDRs)
-│   └── provenance_ledger_phase08.json  # Cryptographic SHA-256 data manifest
-├── docs/                   # Complete engineering reports, operational runbooks & pitch assets
-│   ├── OPERATIONAL_RUNBOOK.md       # Field-pilot deployment & incident response manual
-│   ├── SIH_DEMONSTRATION_SCRIPT.md  # 8-minute timed live demonstration walkthrough
-│   ├── SIH_TECHNICAL_DEFENCE.md     # Mathematical proofs & jury technical defense
-│   └── PHASE_09_COMPLETION_REPORT.md # Final project engineering sign-off
-├── frontend/public/        # Industrial dark-mode UI cockpits (HTML5, Vanilla CSS, JS)
-├── scripts/                # Benchmark suites, LOWO backtest, pitch deck generator
-├── Dockerfile              # Hardened multi-stage non-root container build
-├── docker-compose.yml      # Multi-container production deployment manifest
-└── requirements.txt        # Production Python dependencies
+│   ├── processed/             ← Ready-to-use database file (nwis_local.db)
+│   ├── raw/volve/             ← Original drilling data from the Equinor Volve oil field
+│   └── provenance_ledger_phase08.json  ← Digital fingerprint of all data files (SHA-256)
+│
+├── docs/                      ← Detailed documentation and reports
+│   ├── OPERATIONAL_RUNBOOK.md         ← Step-by-step guide for field deployment
+│   ├── SIH_DEMONSTRATION_SCRIPT.md    ← 8-minute live demo walkthrough
+│   ├── SIH_TECHNICAL_DEFENCE.md       ← Math proofs and technical answers for judges
+│   └── PHASE_09_COMPLETION_REPORT.md  ← Final engineering sign-off report
+│
+├── frontend/public/           ← All the web pages (HTML, CSS, JavaScript)
+│
+├── scripts/                   ← Helper scripts (speed tests, accuracy tests, etc.)
+│
+├── Dockerfile                 ← Instructions to build a secure Docker container
+├── docker-compose.yml         ← One-click setup for the full app
+└── requirements.txt           ← List of Python libraries the app needs
 ```
 
 ---
 
-## 📄 License & Authentic Data Attribution
+## 🔑 Key Technical Terms (Glossary)
 
-* **Software Engine:** Released under the MIT License.
-* **Petroleum Geological Data:** The sample drilling datasets originate from the **Equinor Volve Field Open Data Repository**, shared under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (**CC BY-NC-SA 4.0**).
-* **Official Well Identifiers:** Stratigraphic boundaries verified against the **Norwegian Offshore Directorate (NOD / NPD Factpages)**.
+If you're new to oil and gas or software, here's a quick guide:
+
+| Term | What It Means |
+|---|---|
+| **Measured Depth (MD)** | The total length of drill pipe in the ground. NOT the true depth — because the well curves. |
+| **True Vertical Depth (TVD)** | The actual straight-down depth from the rig to the drill bit. |
+| **TVDSS** | True Vertical Depth below Sea Level — the standard way to compare depths across all wells. |
+| **Formation** | A layer of rock underground (like layers of a cake). Each formation has a name and specific properties. |
+| **Stuck Pipe** | When the drill pipe gets jammed in the hole and can't move up or down. Very expensive to fix. |
+| **Kick** | When underground fluids (gas or water) push into the well unexpectedly. Can lead to a blowout if not controlled. |
+| **Lost Circulation** | When drilling mud flows into cracks in the rock instead of coming back up. You lose your mud. |
+| **Packoff** | When rock fragments pack around the drill pipe and restrict movement. |
+| **DDR** | Daily Drilling Report — a paper/PDF report written every day during drilling operations. |
+| **WITSML** | An industry standard for transmitting live rig sensor data digitally. |
+| **OCR** | Optical Character Recognition — technology that reads text from scanned images or PDFs. |
+| **HMAC-SHA256** | A digital signature that proves a piece of data hasn't been tampered with. Like a wax seal on a letter. |
+| **Offset Well** | A well that was drilled nearby in the past. Its data helps predict what your current well will face. |
+| **eRTMAC** | Oil India's Real-Time Monitoring and Analytics Center — their 24/7 command center for all drilling operations. |
+
+---
+
+## 📄 License & Data Sources
+
+- **Software:** Released under the **MIT License** (open source — free to use, modify, and share).
+- **Drilling Data:** Sample data comes from the **Equinor Volve Field** (North Sea, Norway), shared publicly under the **CC BY-NC-SA 4.0** license.
+- **Well Identifiers:** Verified against official records from the **Norwegian Offshore Directorate (NPD)**.
 
 ---
 
 <div align="center">
 
-**Developed with engineering precision for Oil India Limited under Smart India Hackathon 2026.**  
-*Strict Evidence. Zero Hallucination. Operational Excellence.*
+**Built for Oil India Limited | Smart India Hackathon 2026**  
+*Real Evidence. No Guessing. Keeping Drillers Safe.*
+
+---
+
+### 🌐 Live Demo
+
+**[https://ertmac-nwis-q4yt.onrender.com/](https://ertmac-nwis-q4yt.onrender.com/)**
 
 </div>
