@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NWIS PULSE — Industrial Drilling Telemetry & Decision Cockpit | eRTMAC</title>
+  <meta name="description" content="Industrial drilling telemetry integration, WITSML/ETP standards, live formation-aware intelligence, Two-Layer Evidence Passport, and human-controlled advisories.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    /* NWIS PULSE Industrial Telemetry Theme */
+    :root {
+      --bg-pulse-panel: #13100E;
+      --bg-pulse-card: #1C1814;
+      --border-pulse: rgba(205, 133, 63, 0.28);
+      --border-pulse-active: #CD853F;
+      --neon-cyan: #38BDF8;
+      --neon-amber: #F59E0B;
+      --neon-red: #EF4444;
+      --neon-green: #10B981;
+    }
+
+    .pulse-container {
+      padding: 16px 24px;
+      max-width: 1780px;
+      margin: 0 auto;
+    }
+
+    /* Top Mode & Status Banner */
+    .pulse-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-pulse-panel);
+      border: 1px solid var(--border-pulse);
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .mode-live {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--neon-green);
+      color: #6EE7B7;
+    }
+
+    .mode-replay {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .mode-synthetic {
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid var(--neon-amber);
+      color: #FCD34D;
+    }
+
+    /* Stratigraphic Depth Strip */
+    .strat-strip {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 220, 180, 0.08);
+    }
+
+    .strat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .strat-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .strat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--copper-bright);
+    }
+
+    /* Main 3-Column Layout */
+    .pulse-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr 480px;
+      gap: 18px;
+    }
+
+    .pulse-panel {
+      background: var(--bg-pulse-panel);
+      border: 1px solid var(--border-pulse);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 220, 180, 0.08);
+      padding-bottom: 10px;
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--copper-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Gauges Grid */
+    .gauges-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .gauge-card {
+      background: var(--bg-pulse-card);
+      border: 1px solid rgba(255, 220, 180, 0.07);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .gauge-card:hover {
+      border-color: var(--border-pulse-active);
+      transform: translateY(-1px);
+    }
+
+    .gauge-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .gauge-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 4px 0;
+    }
+
+    .gauge-unit {
+      font-size: 0.72rem;
+      color: var(--copper-primary);
+      font-weight: 600;
+      align-self: flex-end;
+    }
+
+    .gauge-bar-bg {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .gauge-bar-fill {
+      height: 100%;
+      background: var(--copper-primary);
+      width: 50%;
+      transition: width 0.3s ease;
+    }
+
+    /* Strip Charts Container */
+    .strip-chart-wrap {
+      background: var(--bg-pulse-card);
+      border: 1px solid rgba(255, 220, 180, 0.07);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .strip-chart-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    canvas.strip-canvas {
+      width: 100%;
+      height: 70px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 4px;
+    }
+
+    /* Middle Column: Stratigraphic Horizon & Advisories */
+    .horizon-box {
+      background: linear-gradient(180deg, rgba(205, 133, 63, 0.12) 0%, rgba(205, 133, 63, 0.02) 100%);
+      border: 1px solid var(--border-pulse-active);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .penetration-progress {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .penetration-fill {
+      background: linear-gradient(90deg, var(--copper-primary), var(--neon-cyan));
+      height: 100%;
+      width: 35%;
+      border-radius: 4px;
+    }
+
+    /* Advisory Card */
+    .adv-card {
+      background: var(--bg-pulse-card);
+      border-left: 4px solid var(--neon-amber);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .adv-card.critical {
+      border-left-color: var(--neon-red);
+      background: rgba(239, 68, 68, 0.06);
+    }
+
+    .adv-card.selected {
+      border: 1px solid var(--border-pulse-active);
+      border-left-width: 4px;
+      box-shadow: 0 0 15px rgba(205, 133, 63, 0.3);
+    }
+
+    .adv-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .adv-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-critical {
+      background: rgba(239, 68, 68, 0.2);
+      color: #F87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .adv-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .adv-summary {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Signature Innovation: Two-Layer Evidence Passport Box */
+    .passport-container {
+      background: #171412;
+      border: 1px solid var(--border-pulse);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .passport-layer {
+      background: var(--bg-pulse-card);
+      border: 1px solid rgba(255, 220, 180, 0.08);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .passport-layer-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .title-layer-a {
+      color: var(--neon-cyan);
+    }
+
+    .title-layer-b {
+      color: var(--copper-bright);
+    }
+
+    .passport-kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    .passport-kv {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .passport-k {
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+    }
+
+    .passport-v {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .verified-passage-box {
+      margin-top: 8px;
+      background: rgba(0,0,0,0.3);
+      border-left: 3px solid var(--copper-primary);
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #E6D8C8;
+      font-style: italic;
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* Human Action Buttons */
+    .action-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-pulse-card);
+      border: 1px solid rgba(255, 220, 180, 0.08);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .action-input {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border-pulse);
+      border-radius: 6px;
+      color: #fff;
+      padding: 10px;
+      font-size: 0.82rem;
+      font-family: var(--font-sans);
+      resize: vertical;
+      min-height: 55px;
+    }
+
+    .action-btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-pulse {
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-ack {
+      background: var(--copper-primary);
+      color: #fff;
+    }
+    .btn-ack:hover {
+      background: var(--copper-bright);
+    }
+
+    .btn-resolve {
+      background: var(--neon-green);
+      color: #052e16;
+    }
+
+    .btn-suppress {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+    }
+
+    /* Inspector Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--bg-pulse-panel);
+      border: 1px solid var(--border-pulse-active);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 920px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+    }
+    .inspector-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 14px;
+    }
+    .inspector-table th {
+      text-align: left;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--copper-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-pulse);
+    }
+    .inspector-table td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 220, 180, 0.06);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Executive Navigation Bar -->
+  <header class="portal-header">
+    <a href="/landing.html" class="portal-brand">
+      <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited">
+      <div class="portal-brand-text">
+        <h1>OIL INDIA LIMITED</h1>
+        <span>eRTMAC — NWIS Platform</span>
+      </div>
+    </a>
+
+    <nav class="portal-nav">
+      <a href="/landing.html" class="portal-nav-btn">🏛️ Home</a>
+      <a href="/pulse.html" class="portal-nav-btn active">📡 NWIS PULSE</a>
+      <a href="/sentinel.html" class="portal-nav-btn">🛡️ Sentinel AI</a>
+      <a href="/geocore.html" class="portal-nav-btn">💎 GeoCore</a>
+      <a href="/radar.html" class="portal-nav-btn">🛰️ Offset Radar</a>
+      <a href="/stratigraphy.html" class="portal-nav-btn">🌋 3D Strata</a>
+      <a href="/lookahead.html" class="portal-nav-btn">⚡ Look-Ahead</a>
+      <a href="/chronos.html" class="portal-nav-btn">⏱️ Chronos Replay</a>
+      <a href="/documents.html" class="portal-nav-btn">📄 Document AI</a>
+      <a href="/backtest.html" class="portal-nav-btn">📊 Back-Test</a>
+    </nav>
+
+    <div class="portal-header-right">
+      <div class="well-select-wrap">
+        <span>ACTIVE RIG TARGET:</span>
+        <select class="well-select" id="well-selector" onchange="onWellChange()">
+          <option value="NO 15/9-F-12" selected>NO 15/9-F-12 (Volve Dev)</option>
+          <option value="NO 15/9-F-14">NO 15/9-F-14 (Volve Sidetrack)</option>
+          <option value="NO 15/9-F-11">NO 15/9-F-11 (North Infill)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Pulse Command Centre Container -->
+  <div class="pulse-container">
+
+    <!-- Status Bar & Source Mode Switcher -->
+    <div class="pulse-status-bar">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span id="source-mode-badge" class="mode-badge mode-replay">
+          <span style="font-size: 0.9rem;">●</span> MODE 2 — GENUINE RECORDED REPLAY
+        </span>
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="source-name-display">
+          Equinor Volve Traceable Dataset (NO 15/9-F-12)
+        </span>
+      </div>
+
+      <div class="strat-strip">
+        <div class="strat-item">
+          <span class="strat-label">Bit Depth (MD)</span>
+          <span class="strat-value" id="disp-md">2,510.5 m</span>
+        </div>
+        <div class="strat-item">
+          <span class="strat-label">Depth (TVDSS)</span>
+          <span class="strat-value" id="disp-tvdss">2,315.2 m</span>
+        </div>
+        <div class="strat-item">
+          <span class="strat-label">Stratigraphic Formation</span>
+          <span class="strat-value" style="color: #6EE7B7;" id="disp-formation">Hugin Formation</span>
+        </div>
+        <div class="strat-item">
+          <span class="strat-label">Data Quality</span>
+          <span class="strat-value" style="color: #38BDF8;" id="disp-quality">HEALTHY</span>
+        </div>
+        <div class="strat-item">
+          <span class="strat-label">Latency / Freshness</span>
+          <span class="strat-value" style="color: #FCD34D;" id="disp-lag">1.8s lag</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-pulse" style="background: rgba(255,255,255,0.08); color: var(--copper-bright);" onclick="openQualityInspector()">
+          🔍 Data Transparency
+        </button>
+        <button class="btn-pulse btn-ack" onclick="stepReplay()">
+          ⏩ Step +1.2m
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="pulse-grid">
+
+      <!-- Left Column: Drilling Parameter Gauges & Strip Charts -->
+      <div class="pulse-panel">
+        <div class="panel-header">
+          <span class="panel-title">🎛️ Real-Time Telemetry Channels</span>
+          <span style="font-size: 0.72rem; color: var(--neon-cyan); font-family: 'JetBrains Mono', monospace;">WITSML 1.4.1.1 STREAM</span>
+        </div>
+
+        <div class="gauges-grid">
+          <div class="gauge-card">
+            <div class="gauge-header"><span>ROP</span><span>Rate of Pen.</span></div>
+            <div class="gauge-value" id="val-rop">16.4</div>
+            <div class="gauge-unit">m/h</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-rop" style="width: 35%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>WOB</span><span>Weight on Bit</span></div>
+            <div class="gauge-value" id="val-wob">120.5</div>
+            <div class="gauge-unit">kN</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-wob" style="width: 50%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>RPM</span><span>Rotary Speed</span></div>
+            <div class="gauge-value" id="val-rpm">115.0</div>
+            <div class="gauge-unit">rpm</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-rpm" style="width: 45%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>TORQUE</span><span>Surf. Torque</span></div>
+            <div class="gauge-value" id="val-torque">18.2</div>
+            <div class="gauge-unit">kN.m</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-torque" style="width: 40%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>SPP</span><span>Standpipe Pres.</span></div>
+            <div class="gauge-value" id="val-spp">24,800</div>
+            <div class="gauge-unit">kPa</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-spp" style="width: 60%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>FLOW IN</span><span>Mud Flow In</span></div>
+            <div class="gauge-value" id="val-flowin">2,650</div>
+            <div class="gauge-unit">L/min</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-flowin" style="width: 55%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>FLOW OUT</span><span>Return Flow</span></div>
+            <div class="gauge-value" id="val-flowout">100.2</div>
+            <div class="gauge-unit">%</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-flowout" style="width: 50%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>PIT VOL</span><span>Active Volume</span></div>
+            <div class="gauge-value" id="val-pitvol">142.5</div>
+            <div class="gauge-unit">m³</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-pitvol" style="width: 45%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>MUD WT</span><span>Active Density</span></div>
+            <div class="gauge-value" id="val-mw">1.28</div>
+            <div class="gauge-unit">sg</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-mw" style="width: 40%;"></div></div>
+          </div>
+
+          <div class="gauge-card">
+            <div class="gauge-header"><span>ECD</span><span>Circ. Density</span></div>
+            <div class="gauge-value" id="val-ecd">1.34</div>
+            <div class="gauge-unit">sg</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="bar-ecd" style="width: 48%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Real-Time Strip Charts -->
+        <div class="strip-chart-wrap">
+          <div class="strip-chart-title">
+            <span>Standpipe Pressure & Flow Balance Trend</span>
+            <span style="color: var(--neon-cyan);">60-Sample History</span>
+          </div>
+          <canvas id="chart-spp" class="strip-canvas"></canvas>
+        </div>
+
+        <div class="strip-chart-wrap">
+          <div class="strip-chart-title">
+            <span>Rate of Penetration & Torque Trend</span>
+            <span style="color: var(--copper-bright);">MSE Physical Correlation</span>
+          </div>
+          <canvas id="chart-rop" class="strip-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Middle Column: Subsurface Stratigraphy & Operational Advisories -->
+      <div class="pulse-panel">
+        <div class="panel-header">
+          <span class="panel-title">🌋 GeoCore Stratigraphic Position & Anomaly Detection</span>
+          <span class="adv-badge badge-warning" id="active-adv-count">1 ADVISORY ACTIVE</span>
+        </div>
+
+        <div class="horizon-box">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Active Subsurface Target</div>
+            <div style="font-size: 1.15rem; font-weight: 700; color: #fff; margin: 2px 0;" id="horizon-name">Hugin Sandstone (Middle Jurassic)</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Top: 2,290.0m TVDSS | Base: 2,375.0m TVDSS</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Penetration Depth</div>
+            <div style="font-size: 1.15rem; font-weight: 700; color: var(--neon-cyan);" id="disp-penetration">29.6% (25.2m)</div>
+          </div>
+        </div>
+
+        <div class="penetration-progress">
+          <div class="penetration-fill" id="penetration-bar"></div>
+        </div>
+
+        <!-- Advisories List -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <span style="font-size: 0.8rem; font-weight: 700; color: var(--copper-bright); text-transform: uppercase;">Real-Time Operational Advisories</span>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">Human Review Required</span>
+        </div>
+
+        <div id="advisories-list" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 480px;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Right Column: Signature Two-Layer Evidence Passport & Human Decision Drawer -->
+      <div class="pulse-panel">
+        <div class="panel-header">
+          <span class="panel-title">🛡️ Two-Layer Evidence Passport</span>
+          <span style="font-size: 0.72rem; color: #10B981; font-family: 'JetBrains Mono', monospace;">AUDIT VERIFIED</span>
+        </div>
+
+        <div class="passport-container" id="passport-box">
+          <!-- Layer A: Live Telemetry Evidence -->
+          <div class="passport-layer">
+            <div class="passport-layer-title title-layer-a">
+              <span>●</span> LAYER A — CURRENT TELEMETRY EVIDENCE
+            </div>
+            <div class="passport-kv-grid">
+              <div class="passport-kv">
+                <span class="passport-k">Channel Triggered</span>
+                <span class="passport-v" id="pp-layer-a-ch">FLOW_OUT</span>
+              </div>
+              <div class="passport-kv">
+                <span class="passport-k">Measured Value</span>
+                <span class="passport-v" id="pp-layer-a-val">95.8 %</span>
+              </div>
+              <div class="passport-kv">
+                <span class="passport-k">Variance / Delta</span>
+                <span class="passport-v" style="color: #F87171;" id="pp-layer-a-delta">-4.2% Deficit</span>
+              </div>
+              <div class="passport-kv">
+                <span class="passport-k">Rule Specification</span>
+                <span class="passport-v" id="pp-layer-a-rule">RULE_LOSS_DETECTION_v2.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layer B: Verified Historical Evidence -->
+          <div class="passport-layer">
+            <div class="passport-layer-title title-layer-b">
+              <span>●</span> LAYER B — VERIFIED HISTORICAL EVIDENCE
+            </div>
+            <div class="passport-kv-grid">
+              <div class="passport-kv">
+                <span class="passport-k">Offset Wellbore</span>
+                <span class="passport-v" id="pp-layer-b-well">NO 15/9-F-14</span>
+              </div>
+              <div class="passport-kv">
+                <span class="passport-k">Historical Depth</span>
+                <span class="passport-v" id="pp-layer-b-depth">2,322.0 m TVDSS</span>
+              </div>
+              <div class="passport-kv">
+                <span class="passport-k">Incident Category</span>
+                <span class="passport-v" id="pp-layer-b-event">LOST_CIRCULATION</span>
+              </div>
+              <div class="passport-kv">
+                <span class="passport-k">Provenance Tier</span>
+                <span class="passport-v" style="color: #34D399;">ORIGINAL_VERIFIED</span>
+              </div>
+            </div>
+
+            <div class="verified-passage-box" id="pp-layer-b-quote">
+              "At 2415m MD (2322m TVDSS) in Hugin sandstone, encountered severe mud loss of 18 m3/hr with 1.32 SG mud. Cured with 40 ppb coarse calcium carbonate LCM pill."
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px;" id="pp-layer-b-citation">
+              Source: End of Well Report Well 15/9-F-14 Section 5.1 (Equinor)
+            </div>
+          </div>
+        </div>
+
+        <!-- Human Driller Action Box -->
+        <div class="action-controls">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--copper-bright); text-transform: uppercase;">
+              Superintendent Decision Authority
+            </span>
+            <span style="font-size: 0.7rem; color: var(--text-muted);" id="adv-state-pill">STATUS: NEW</span>
+          </div>
+
+          <textarea class="action-input" id="driller-comments" placeholder="Enter engineering justification or mitigative action taken (e.g., 'Flow check positive, LCM pill prepared...')."></textarea>
+
+          <div class="action-btn-row">
+            <button class="btn-pulse btn-ack" onclick="submitAdvisoryAction('ACKNOWLEDGE')">
+              ✓ Acknowledge
+            </button>
+            <button class="btn-pulse btn-resolve" onclick="submitAdvisoryAction('RESOLVE')">
+              🛡️ Resolve
+            </button>
+            <button class="btn-pulse btn-suppress" onclick="submitAdvisoryAction('SUPPRESS')">
+              Suppress
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Sentinel AI Assist -->
+        <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,220,180,0.06); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--neon-cyan); margin-bottom: 6px;">
+            🤖 Sentinel Telemetry Intelligence Assist
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button class="btn-pulse" style="background: rgba(56, 189, 248, 0.1); color: var(--neon-cyan); justify-content: flex-start;" onclick="askSentinel('Explain active advisory and compare with offset well F-14')">
+              💬 "Explain active advisory and compare with offset well F-14"
+            </button>
+            <button class="btn-pulse" style="background: rgba(205, 133, 63, 0.1); color: var(--copper-bright); justify-content: flex-start;" onclick="askSentinel('What channels are stale or degrading?')">
+              💬 "What channels are stale or degrading?"
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Telemetry Transparency / Data Quality Inspector Modal -->
+  <div class="modal-overlay" id="inspector-modal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-pulse); padding-bottom: 12px;">
+        <span style="font-size: 1.1rem; font-weight: 700; color: var(--copper-bright);">
+          🔍 Industrial Telemetry Transparency & Data Quality Inspector
+        </span>
+        <button class="btn-pulse btn-suppress" onclick="closeQualityInspector()">✕ Close</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0;">
+        <div style="background: var(--bg-pulse-card); padding: 10px; border-radius: 6px;">
+          <div style="font-size: 0.68rem; color: var(--text-muted);">SOURCE PROTOCOL</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fff;">WITSML 1.4.1.1</div>
+        </div>
+        <div style="background: var(--bg-pulse-card); padding: 10px; border-radius: 6px;">
+          <div style="font-size: 0.68rem; color: var(--text-muted);">OVERALL QUALITY</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #10B981;">HEALTHY</div>
+        </div>
+        <div style="background: var(--bg-pulse-card); padding: 10px; border-radius: 6px;">
+          <div style="font-size: 0.68rem; color: var(--text-muted);">CHECKSUM VERIFICATION</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #38BDF8;">SHA-256 MATCH</div>
+        </div>
+        <div style="background: var(--bg-pulse-card); padding: 10px; border-radius: 6px;">
+          <div style="font-size: 0.68rem; color: var(--text-muted);">FRESHNESS LAG</div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #FCD34D;">1.8s</div>
+        </div>
+      </div>
+
+      <table class="inspector-table">
+        <thead>
+          <tr>
+            <th>Mnemonic</th>
+            <th>Canonical Name</th>
+            <th>Unit</th>
+            <th>Live Value</th>
+            <th>Sensor Type</th>
+            <th>Sampling</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="inspector-table-body">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let activeWell = "NO 15/9-F-12";
+    let activeAdvisories = [];
+    let selectedAdvisoryId = null;
+    let sppHistory = [];
+    let ropHistory = [];
+
+    // Initialize on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      fetchLiveTelemetry();
+      fetchAdvisories();
+      fetchHistory();
+      setInterval(fetchLiveTelemetry, 3000);
+    });
+
+    function onWellChange() {
+      activeWell = document.getElementById("well-selector").value;
+      document.getElementById("source-name-display").innerText = `Equinor Volve Traceable Dataset (${activeWell})`;
+      fetchLiveTelemetry();
+      fetchAdvisories();
+      fetchHistory();
+    }
+
+    async function fetchLiveTelemetry() {
+      try {
+        const res = await fetch(`/api/v1/pulse/live/${encodeURIComponent(activeWell)}`);
+        if (!res.ok) return;
+        const d = await res.json();
+
+        // Update top strip
+        document.getElementById("disp-md").innerText = `${Number(d.md_m).toFixed(1)} m`;
+        document.getElementById("disp-tvdss").innerText = `${Number(d.tvdss_m).toFixed(1)} m`;
+        document.getElementById("disp-formation").innerText = d.current_formation || "Hugin Formation";
+        document.getElementById("disp-quality").innerText = d.quality_state || "HEALTHY";
+        document.getElementById("horizon-name").innerText = `${d.current_formation || 'Hugin Sandstone'} (Middle Jurassic)`;
+        
+        const pen = d.formation_penetration_pct || 29.6;
+        document.getElementById("disp-penetration").innerText = `${pen}%`;
+        document.getElementById("penetration-bar").style.width = `${pen}%`;
+
+        // Update gauges
+        updateGauge("rop", d.rop_m_hr, 50);
+        updateGauge("wob", d.wob_kn, 250);
+        updateGauge("rpm", d.rpm, 200);
+        updateGauge("torque", d.torque_kn_m, 40);
+        updateGauge("spp", d.spp_kpa ? Math.round(d.spp_kpa) : 24800, 40000);
+        updateGauge("flowin", d.flow_in_lpm ? Math.round(d.flow_in_lpm) : 2650, 5000);
+        updateGauge("flowout", d.flow_out_pct, 150);
+        updateGauge("pitvol", d.pit_volume_m3, 250);
+        updateGauge("mw", d.mud_weight_sg, 2.0);
+        updateGauge("ecd", d.ecd_sg, 2.0);
+
+      } catch (err) {
+        console.error("Failed to fetch live telemetry:", err);
+      }
+    }
+
+    function updateGauge(id, val, maxVal) {
+      if (val === undefined || val === null) return;
+      const elVal = document.getElementById(`val-${id}`);
+      const elBar = document.getElementById(`bar-${id}`);
+      if (elVal) elVal.innerText = typeof val === 'number' ? val.toLocaleString() : val;
+      if (elBar && typeof val === 'number') {
+        const pct = Math.min(100, Math.max(5, (val / maxVal) * 100));
+        elBar.style.width = `${pct}%`;
+      }
+    }
+
+    async function fetchAdvisories() {
+      try {
+        const res = await fetch(`/api/v1/pulse/advisories/${encodeURIComponent(activeWell)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        activeAdvisories = data.advisories || [];
+
+        document.getElementById("active-adv-count").innerText = `${activeAdvisories.length} ADVISORIES ACTIVE`;
+
+        const listEl = document.getElementById("advisories-list");
+        listEl.innerHTML = "";
+
+        activeAdvisories.forEach((adv, idx) => {
+          const isSelected = selectedAdvisoryId === adv.advisory_id || (selectedAdvisoryId === null && idx === 0);
+          if (isSelected) {
+            selectedAdvisoryId = adv.advisory_id;
+            displayEvidencePassport(adv);
+          }
+
+          const card = document.createElement("div");
+          card.className = `adv-card ${adv.severity.toLowerCase()} ${isSelected ? 'selected' : ''}`;
+          card.onclick = () => {
+            selectedAdvisoryId = adv.advisory_id;
+            document.querySelectorAll(".adv-card").forEach(c => c.classList.remove("selected"));
+            card.classList.add("selected");
+            displayEvidencePassport(adv);
+          };
+
+          card.innerHTML = `
+            <div class="adv-header">
+              <span class="adv-badge ${adv.severity === 'CRITICAL' ? 'badge-critical' : 'badge-warning'}">${adv.severity}</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">${adv.advisory_state}</span>
+            </div>
+            <div class="adv-title">${adv.title}</div>
+            <div class="adv-summary">${adv.summary}</div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--copper-bright);">
+              <span>Formation: ${adv.formation_name}</span>
+              <span>Bit TVDSS: ${adv.bit_depth_tvdss_m}m</span>
+            </div>
+          `;
+          listEl.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error("Failed to fetch advisories:", err);
+      }
+    }
+
+    function displayEvidencePassport(adv) {
+      const layA = adv.telemetry_evidence || {};
+      const layB = adv.historical_evidence || {};
+
+      document.getElementById("pp-layer-a-ch").innerText = layA.channel_triggered || "FLOW_OUT";
+      document.getElementById("pp-layer-a-val").innerText = `${layA.measured_value || 95.8} ${layA.unit || '%'}`;
+      document.getElementById("pp-layer-a-delta").innerText = layA.delta || "-4.2% Deficit";
+      document.getElementById("pp-layer-a-rule").innerText = layA.rule_version || "RULE_LOSS_v2.0";
+
+      document.getElementById("pp-layer-b-well").innerText = layB.offset_well || "NO 15/9-F-14";
+      document.getElementById("pp-layer-b-depth").innerText = `${layB.historical_depth_tvdss_m || 2322.0} m TVDSS`;
+      document.getElementById("pp-layer-b-event").innerText = layB.event_type || "LOST_CIRCULATION";
+      document.getElementById("pp-layer-b-quote").innerText = `"${layB.verified_passage || 'Encountered severe loss...'}"`;
+      document.getElementById("pp-layer-b-citation").innerText = `Source: ${layB.source_citation || 'End of Well Report'}`;
+
+      document.getElementById("adv-state-pill").innerText = `STATUS: ${adv.advisory_state}`;
+    }
+
+    async function submitAdvisoryAction(action) {
+      if (!selectedAdvisoryId) return;
+      const comments = document.getElementById("driller-comments").value || `Action ${action} initiated by drilling supervisor.`;
+
+      try {
+        const res = await fetch(`/api/v1/pulse/advisories/${selectedAdvisoryId}/action`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            actor_id: "SUPERINTENDENT_OIL",
+            actor_role: "DRILLING_SUPERINTENDENT",
+            action: action,
+            comments: comments
+          })
+        });
+
+        if (res.ok) {
+          alert(`Advisory ${selectedAdvisoryId} state updated to ${action}`);
+          document.getElementById("driller-comments").value = "";
+          fetchAdvisories();
+        }
+      } catch (err) {
+        console.error("Action failed:", err);
+      }
+    }
+
+    async function stepReplay() {
+      try {
+        const res = await fetch("/api/v1/pulse/replay/step", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            wellbore_id: activeWell,
+            source_mode: "GENUINE_RECORDED_REPLAY",
+            speed_factor: 1.0
+          })
+        });
+        if (res.ok) {
+          fetchLiveTelemetry();
+          fetchAdvisories();
+          fetchHistory();
+        }
+      } catch (err) {
+        console.error("Replay step error:", err);
+      }
+    }
+
+    async function fetchHistory() {
+      try {
+        const res = await fetch(`/api/v1/pulse/history/${encodeURIComponent(activeWell)}?limit=40`);
+        if (!res.ok) return;
+        const d = await res.json();
+        const records = d.records || [];
+
+        sppHistory = records.map(r => r.spp_kpa || 24800);
+        ropHistory = records.map(r => r.rop_m_hr || 15);
+
+        renderStripChart("chart-spp", sppHistory, "#38BDF8");
+        renderStripChart("chart-rop", ropHistory, "#CD853F");
+      } catch (err) {
+        console.error("History fetch error:", err);
+      }
+    }
+
+    function renderStripChart(canvasId, data, strokeColor) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width = canvas.parentElement.clientWidth;
+      const h = canvas.height = 70;
+
+      ctx.clearRect(0, 0, w, h);
+      if (data.length < 2) return;
+
+      const minVal = Math.min(...data) * 0.98;
+      const maxVal = Math.max(...data) * 1.02;
+      const range = (maxVal - minVal) || 1;
+
+      ctx.beginPath();
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
+
+      data.forEach((val, i) => {
+        const x = (i / (data.length - 1)) * w;
+        const y = h - ((val - minVal) / range) * (h - 10) - 5;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Subtle fill
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fillStyle = strokeColor + "15";
+      ctx.fill();
+    }
+
+    async function openQualityInspector() {
+      try {
+        const res = await fetch(`/api/v1/pulse/quality-inspector/${encodeURIComponent(activeWell)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const tbody = document.getElementById("inspector-table-body");
+        tbody.innerHTML = "";
+
+        data.channels.forEach(ch => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--neon-cyan);">${ch.mnemonic}</td>
+            <td>${ch.name}</td>
+            <td style="font-family: 'JetBrains Mono', monospace;">${ch.unit}</td>
+            <td style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fff;">${ch.value}</td>
+            <td style="color: var(--text-muted);">${ch.sensor}</td>
+            <td style="font-family: 'JetBrains Mono', monospace;">${ch.sampling_interval_s}s</td>
+            <td><span style="color: ${ch.status === 'HEALTHY' ? '#10B981' : '#38BDF8'}; font-weight: 700;">● ${ch.status}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("inspector-modal").classList.add("active");
+      } catch (err) {
+        console.error("Inspector error:", err);
+      }
+    }
+
+    function closeQualityInspector() {
+      document.getElementById("inspector-modal").classList.remove("active");
+    }
+
+    function askSentinel(query) {
+      window.location.href = `/sentinel.html?q=${encodeURIComponent(query)}`;
+    }
+  </script>
+</body>
+</html>

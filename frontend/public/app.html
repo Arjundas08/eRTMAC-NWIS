@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eRTMAC-NWIS | Nearby Wells Intelligence System</title>
+  <meta name="description" content="AI-Powered Offset Well Knowledge and Decision Support Platform for Oil India Limited drilling operations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container" id="app-container">
+    
+    <!-- Top Enterprise SCADA Header -->
+    <header class="app-header" id="main-header">
+      <a href="/landing.html" class="header-brand" title="Return to Executive Overview" style="text-decoration:none;display:flex;align-items:center;">
+        <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited" style="width:40px;height:40px;object-fit:contain;margin-right:12px;filter:drop-shadow(0 2px 6px rgba(8,127,140,0.5));">
+        <div class="brand-titles">
+          <h1>OIL INDIA LIMITED — eRTMAC-NWIS</h1>
+          <span class="brand-subtitle">Nearby Wells Intelligence & Horizon Decision Support System</span>
+        </div>
+      </a>
+
+      <div class="header-well-selector">
+        <label for="active-well-select">ACTIVE RIG & WELL:</label>
+        <select id="active-well-select" class="scada-select">
+          <option value="NO-15/9-F-12" selected>RIG-OIL-09 (Well NO-15/9-F-12)</option>
+          <option value="NO-15/9-F-14">RIG-OIL-14 (Well NO-15/9-F-14)</option>
+          <option value="NO-15/9-F-15S">RIG-OIL-15 (Well NO-15/9-F-15S)</option>
+        </select>
+      </div>
+
+      <div class="header-telemetry-pill">
+        <span class="pulse-indicator" id="stream-pulse"></span>
+        <span id="telemetry-status-text">WITSML STREAM: CONNECTED</span>
+      </div>
+
+      <div class="header-actions">
+        <a href="/landing.html" class="btn btn-secondary" style="text-decoration:none;" title="View Executive Briefing and Capabilities">
+          <span class="btn-icon">🏛</span> Overview
+        </a>
+        <button onclick="openModalVisual('/assets/images/subsurface-strata-3d.png', '3D Stratigraphic Model', '3D Geological block diagram showing Nordland Shale, Utsira Sand, Skade Formation, and Hugin Sandstone reservoir with offset wells NO-15/9-F-14 and NO-15/9-F-15S.')" class="btn btn-secondary" title="View 3D Geological Subsurface Model">
+          <span class="btn-icon">🌐</span> 3D Strata
+        </button>
+        <button onclick="openModalVisual('/assets/images/offset-well-correlation.png', 'Offset Well Petrophysical Correlation', 'Multi-well petrophysical correlation comparing Gamma Ray and Resistivity with historical mud loss interval benchmarking.')" class="btn btn-secondary" title="View Offset Well Log Correlation">
+          <span class="btn-icon">📊</span> Correlation
+        </button>
+        <button id="btn-run-simulation" class="btn btn-primary">
+          <span class="btn-icon">&#9658;</span> Play Live Telemetry
+        </button>
+        <button id="btn-run-backtest" class="btn btn-secondary">
+          <span class="btn-icon">&#128202;</span> Run LOWO Back-Test
+        </button>
+      </div>
+    </header>
+
+    <!-- Real-Time Drilling Telemetry Strip -->
+    <section class="telemetry-ribbon" id="telemetry-ribbon">
+      <div class="telemetry-tile">
+        <span class="telemetry-label">BIT DEPTH (MD)</span>
+        <span class="telemetry-value" id="val-depth-md">2893.5 <small>m</small></span>
+      </div>
+      <div class="telemetry-tile">
+        <span class="telemetry-label">SUBSEA DEPTH (TVDSS)</span>
+        <span class="telemetry-value highlight" id="val-depth-tvdss">2850.0 <small>m</small></span>
+      </div>
+      <div class="telemetry-tile">
+        <span class="telemetry-label">STRATIGRAPHIC FORMATION</span>
+        <span class="telemetry-value" id="val-formation">Hugin FM</span>
+      </div>
+      <div class="telemetry-tile">
+        <span class="telemetry-label">RATE OF PENETRATION</span>
+        <span class="telemetry-value" id="val-rop">14.2 <small>m/hr</small></span>
+      </div>
+      <div class="telemetry-tile">
+        <span class="telemetry-label">TORQUE / SPP</span>
+        <span class="telemetry-value" id="val-torque-spp">15.0 <small>kft-lb</small> / 2900 <small>psi</small></span>
+      </div>
+      <div class="telemetry-tile">
+        <span class="telemetry-label">MUD FLOW (IN / OUT)</span>
+        <span class="telemetry-value" id="val-flow">550 <small>GPM</small> / 95%</span>
+      </div>
+      <div class="telemetry-tile">
+        <span class="telemetry-label">HORIZON STATUS</span>
+        <span class="telemetry-badge badge-warning" id="badge-horizon-status">LOOK-AHEAD ADVISORY</span>
+      </div>
+    </section>
+
+    <!-- Main Operational Workspace (3 Columns) -->
+    <main class="main-workspace" id="main-workspace">
+      
+      <!-- Col 1: Geospatial Proximity Radar Map -->
+      <section class="panel-card col-map" id="panel-geospatial">
+        <div class="panel-header">
+          <h2>Geospatial Offset Radar</h2>
+          <div class="radius-control">
+            <label for="slider-radius">Radius: <span id="label-radius">5.0</span> km</label>
+            <input type="range" id="slider-radius" min="1.0" max="15.0" step="0.5" value="5.0">
+          </div>
+        </div>
+        <div id="leaflet-map" class="map-container"></div>
+        <div class="map-footer-legend">
+          <span class="legend-item"><span class="legend-dot dot-active"></span> Active Well</span>
+          <span class="legend-item"><span class="legend-dot dot-offset"></span> Offset Analogue</span>
+          <span class="legend-item"><span class="legend-dot dot-incident"></span> Past Incident Zone</span>
+        </div>
+      </section>
+
+      <!-- Col 2: Stratigraphic TVDSS Correlation Track -->
+      <section class="panel-card col-track" id="panel-stratigraphy">
+        <div class="panel-header">
+          <h2>Stratigraphic Depth Correlation</h2>
+          <span class="panel-subtag">Normalized to TVDSS (Subsea)</span>
+        </div>
+        <div class="correlation-viewport" id="correlation-viewport">
+          <div class="track-header-labels">
+            <span>FORMATION TOPS</span>
+            <span>TVDSS DEPTH</span>
+            <span>HISTORICAL OFFSET INCIDENTS</span>
+          </div>
+          <div class="stratigraphic-column" id="stratigraphic-column">
+            <!-- Dynamically populated formation layers and pinned incidents -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Col 3: Look-Ahead Radar & Evidence Advisor -->
+      <section class="panel-card col-radar" id="panel-lookahead">
+        <div class="panel-header">
+          <h2>Pre-Bit Horizon Radar (75m Look-Ahead)</h2>
+          <span class="badge-evidence" id="evidence-status-pill">VERIFIED OFFSET EVIDENCE</span>
+        </div>
+        
+        <div class="lookahead-scroll-area" id="lookahead-alerts-container">
+          <!-- Dynamic Alert Cards -->
+        </div>
+
+        <!-- Human-in-the-Loop Driller Response Box -->
+        <div class="driller-response-box" id="driller-response-box">
+          <span class="response-title">HUMAN-IN-THE-LOOP DRILLER ACKNOWLEDGMENT</span>
+          <div class="response-buttons">
+            <button class="btn btn-action" id="btn-action-taken">Action Taken (Pre-mixed LCM Staged)</button>
+            <button class="btn btn-nuisance" id="btn-nuisance-alarm">Nuisance / False Alarm</button>
+            <button class="btn btn-noted" id="btn-noted">Acknowledge & Monitor</button>
+          </div>
+          <div id="feedback-confirmation" class="feedback-msg"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Collapsible Drawer: Ask NWIS, Back-Test, Documents, Review Queue & Audit -->
+    <footer class="bottom-drawer" id="bottom-drawer">
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="tab-ask-nwis">Ask NWIS Copilot (Evidence Grounded)</button>
+        <button class="drawer-tab" id="tab-backtest-results">Empirical Back-Test Report (LOWO)</button>
+        <button class="drawer-tab" id="tab-documents">Document Intelligence & Ingestion</button>
+        <button class="drawer-tab" id="tab-review-queue">Human-in-the-Loop Review Queue <span class="badge-pill" id="badge-review-count">0</span></button>
+        <button class="drawer-tab" id="tab-audit-trail">System Governance Audit Trail</button>
+      </div>
+
+      <div class="drawer-content" id="drawer-content">
+        <!-- View 1: Ask NWIS -->
+        <div class="tab-pane active" id="pane-ask-nwis">
+          <div class="chat-history" id="chat-history">
+            <div class="chat-message system-msg">
+              <strong>NWIS Copilot:</strong> Ready. All responses are strictly grounded in historical Daily Drilling Reports and Well Completion Reports. If no offset records exist, the system will explicitly abstain.
+            </div>
+          </div>
+          <form class="chat-input-row" id="form-ask-nwis">
+            <input type="text" id="input-query" placeholder="Ask e.g. 'What mud loss treatments were successful in Hugin sandstone?'" required>
+            <button type="submit" class="btn btn-primary" id="btn-send-query">Ask NWIS</button>
+          </form>
+        </div>
+
+        <!-- View 2: LOWO Back-Test Report -->
+        <div class="tab-pane" id="pane-backtest-results">
+          <div class="backtest-summary-grid" id="backtest-summary-grid">
+            <p>Click <strong>"Run LOWO Back-Test"</strong> in the top header to execute the live empirical validation on held-out well NO-15/9-F-12.</p>
+          </div>
+        </div>
+
+        <!-- View 3: Document Intelligence & Upload -->
+        <div class="tab-pane" id="pane-documents">
+          <div class="doc-intelligence-layout">
+            <div class="doc-upload-box">
+              <h3>Upload Authentic Historical Petroleum Document (DDR / WCR / Mud Log)</h3>
+              <p class="text-muted">Supports native PDFs, scanned reports (OCR enabled), and structured technical tables.</p>
+              <div class="upload-controls">
+                <input type="file" id="input-doc-file" accept=".pdf" class="file-input">
+                <select id="select-doc-well" class="scada-select">
+                  <option value="">Auto-Detect Wellbore</option>
+                  <option value="NO-15/9-F-14">Well NO-15/9-F-14</option>
+                  <option value="NO-15/9-F-15S">Well NO-15/9-F-15S</option>
+                  <option value="NO-15/9-F-12">Well NO-15/9-F-12</option>
+                  <option value="NO-15/9-F-4">Well NO-15/9-F-4</option>
+                  <option value="NO-15/9-F-1">Well NO-15/9-F-1</option>
+                </select>
+                <button id="btn-upload-doc" class="btn btn-primary">Ingest & Extract</button>
+              </div>
+              <div id="upload-status-msg" class="feedback-msg"></div>
+            </div>
+
+            <div class="doc-inventory-table-container">
+              <h3>Ingested Documents Repository & Extraction Registry</h3>
+              <table class="scada-table" id="table-documents">
+                <thead>
+                  <tr>
+                    <th>Filename</th>
+                    <th>Wellbore ID</th>
+                    <th>Report Date</th>
+                    <th>Pages</th>
+                    <th>Type / Scanned</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-documents">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 4: Human-in-the-Loop Review Queue -->
+        <div class="tab-pane" id="pane-review-queue">
+          <div class="review-queue-header">
+            <h3>Human-in-the-Loop Document Verification & Quarantine Review Queue</h3>
+            <p class="text-muted">Review uncertain extraction candidates, missing depths, or unprecedented events before promoting into trusted memory.</p>
+          </div>
+          <table class="scada-table" id="table-review-tasks">
+            <thead>
+              <tr>
+                <th>Task ID</th>
+                <th>Source Document</th>
+                <th>Event Type</th>
+                <th>Depth (MD)</th>
+                <th>Flag Reason</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-review-tasks">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- View 5: Audit Trail -->
+        <div class="tab-pane" id="pane-audit-trail">
+          <div class="audit-log-list" id="audit-log-list">
+            <!-- Dynamic audit records -->
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- EVIDENCE PASSPORT MODAL COMPONENT -->
+    <div id="modal-evidence-passport" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <span class="modal-badge">EVIDENCE PASSPORT</span>
+            <h2 id="ev-modal-title">EVT-VOLVE-001 Verification Dossier</h2>
+          </div>
+          <button class="btn-close-modal" id="btn-close-evidence-modal">&times;</button>
+        </div>
+        <div class="modal-body" id="ev-modal-body">
+          <!-- 8 Mandatory Engineering Questions Grid -->
+          <div class="evidence-8q-grid">
+            <div class="q-card">
+              <span class="q-label">1. WHAT HAPPENED?</span>
+              <span class="q-val alert-hazard" id="q-what-happened">LOST CIRCULATION (SEVERE)</span>
+              <p class="q-sub" id="q-what-narrative"></p>
+              <div class="q-mitigation" id="q-what-mitigation"></div>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">2. WHICH WELLBORE EXPERIENCED IT?</span>
+              <span class="q-val" id="q-wellbore">NO-15/9-F-14</span>
+              <p class="q-sub" id="q-wellbore-sub">Volve (PL 046) | Operator: Equinor</p>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">3. WHEN DID IT HAPPEN?</span>
+              <span class="q-val" id="q-timestamp">2008-09-14T04:30:00Z</span>
+              <p class="q-sub">Historical availability timestamp verified against DDR record date.</p>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">4. AT WHAT DEPTH?</span>
+              <span class="q-val highlight" id="q-depth">2965.0m MD / 2868.0m TVDSS</span>
+              <p class="q-sub" id="q-depth-datum">Datum: TVDSS (MSL, RKB 43.5m)</p>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">5. WHICH GEOLOGICAL INTERVAL?</span>
+              <span class="q-val" id="q-formation">Hugin FM (+4.0m into sand)</span>
+              <p class="q-sub">Correlated against Volve regional lithostratigraphic tops.</p>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">6. WHAT DOES THE ORIGINAL REPORT SAY?</span>
+              <div class="q-quote-box" id="q-quote">"Observed pit volume drop at 2965m while penetrating upper Hugin sand..."</div>
+              <p class="q-sub" id="q-source-doc">Source: Volve DDR Report 2008-09-14, Page 2</p>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">7. WHAT INFORMATION IS MISSING?</span>
+              <span class="q-val" id="q-missing-info">None (Fully Verified)</span>
+            </div>
+
+            <div class="q-card">
+              <span class="q-label">8. HAS THE RECORD BEEN VERIFIED?</span>
+              <div class="q-status-row">
+                <span class="telemetry-badge badge-clear" id="q-verification-status">VERIFIED</span>
+                <span class="q-confidence" id="q-confidence">Confidence: 100%</span>
+              </div>
+              <p class="q-sub" id="q-reviewer-sub">Extraction: NATIVE_PDF_EXTRACT | Reviewed by Petroleum Engineering</p>
+            </div>
+          </div>
+
+          <!-- Document Page Snippet Visualizer -->
+          <div class="evidence-page-visualizer">
+            <h3>Original Supporting Document Page (Highlighted Evidence Passage)</h3>
+            <div class="snippet-image-container">
+              <img id="img-evidence-snippet" src="" alt="Document Evidence Snippet" style="max-width: 100%; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Visual Intelligence Artifact Modal -->
+  <div class="nwis-modal" id="modalVisualArtifact" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,13,24,0.92);backdrop-filter:blur(12px);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+    <div style="background:#0F1F2E;border:1px solid rgba(8,127,140,0.5);box-shadow:0 20px 60px rgba(0,0,0,0.8);border-radius:10px;max-width:1100px;width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:14px 20px;background:#071525;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;">
+        <h3 id="modalVisualTitle" style="font-size:1.05rem;color:#F8FAFC;font-weight:700;">Engineering Visual Artifact</h3>
+        <button onclick="closeModalVisual()" style="background:none;border:none;color:#94A3B8;font-size:1.6rem;cursor:pointer;line-height:1;">&times;</button>
+      </div>
+      <div style="padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
+        <img id="modalVisualImg" src="" alt="" style="width:100%;height:auto;border-radius:6px;border:1px solid rgba(255,255,255,0.08);">
+        <div id="modalVisualCaption" style="font-size:0.88rem;color:#94A3B8;background:#071525;padding:12px;border-radius:6px;border-left:3px solid #E8A83D;line-height:1.5;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

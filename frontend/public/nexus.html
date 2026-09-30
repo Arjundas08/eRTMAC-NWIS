@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NWIS NEXUS — Unified Operations Command Center | eRTMAC</title>
+  <meta name="description" content="Cross-module intelligence fusion dashboard. Real-time system health, unified risk assessment, multi-well comparison, and operations log for shift handover.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    /* NWIS NEXUS Command Center Theme */
+    :root {
+      --nexus-bg: #0D0B09;
+      --nexus-card: #1C1814;
+      --nexus-panel: #13100E;
+      --nexus-border: rgba(205, 133, 63, 0.25);
+      --nexus-border-active: #CD853F;
+      --nexus-glow: rgba(205, 133, 63, 0.15);
+      --neon-cyan: #38BDF8;
+      --neon-amber: #F59E0B;
+      --neon-red: #EF4444;
+      --neon-green: #10B981;
+      --neon-purple: #A78BFA;
+      --nexus-gradient: linear-gradient(135deg, #CD853F 0%, #D4A843 50%, #E8B878 100%);
+    }
+
+    .nexus-container {
+      padding: 16px 24px;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+
+    /* Top Status Banner */
+    .nexus-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--nexus-panel);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      gap: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    }
+
+    .nexus-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nexus-icon {
+      font-size: 32px;
+      filter: drop-shadow(0 0 10px rgba(205,133,63,0.5));
+    }
+
+    .nexus-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: var(--nexus-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nexus-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .nexus-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+
+    .nexus-status-pill.operational {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #10B981;
+    }
+
+    .nexus-status-pill.degraded {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #F59E0B;
+    }
+
+    .nexus-status-pill.standby {
+      background: rgba(160, 148, 136, 0.15);
+      border: 1px solid rgba(160, 148, 136, 0.4);
+      color: var(--text-muted);
+    }
+
+    .nexus-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .nexus-status-dot.operational { background: #10B981; box-shadow: 0 0 8px #10B981; }
+    .nexus-status-dot.degraded { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+    .nexus-status-dot.standby { background: var(--text-muted); }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .nexus-timestamp {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* Grid Layout */
+    .nexus-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .nexus-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .nexus-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* Module Health Cards */
+    .module-card {
+      background: var(--nexus-card);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-card:hover {
+      border-color: var(--nexus-border-active);
+      box-shadow: 0 8px 32px rgba(205,133,63,0.15);
+      transform: translateY(-2px);
+    }
+
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--nexus-gradient);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .module-card:hover::before {
+      opacity: 1;
+    }
+
+    .module-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .module-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .module-status-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .module-status-badge.operational {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10B981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .module-status-badge.standby {
+      background: rgba(160, 148, 136, 0.1);
+      color: var(--text-muted);
+      border: 1px solid rgba(160, 148, 136, 0.2);
+    }
+
+    .module-status-badge.initializing {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .module-status-badge.degraded {
+      background: rgba(245, 158, 11, 0.15);
+      color: #F59E0B;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .module-metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .module-metric:last-child {
+      border-bottom: none;
+    }
+
+    .module-metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .module-metric-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* KPI Cards */
+    .kpi-card {
+      background: var(--nexus-card);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .kpi-card.quality::after { background: #10B981; }
+    .kpi-card.resolution::after { background: #38BDF8; }
+    .kpi-card.uptime::after { background: #F59E0B; }
+    .kpi-card.sentinel::after { background: #A78BFA; }
+    .kpi-card.npt::after { background: #EF4444; }
+
+    .kpi-value {
+      font-size: 36px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .kpi-card.quality .kpi-value { color: #10B981; }
+    .kpi-card.resolution .kpi-value { color: #38BDF8; }
+    .kpi-card.uptime .kpi-value { color: #F59E0B; }
+    .kpi-card.sentinel .kpi-value { color: #A78BFA; }
+    .kpi-card.npt .kpi-value { color: #EF4444; }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-sublabel {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      font-family: var(--font-mono);
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      margin-top: 8px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--copper-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(205, 133, 63, 0.15);
+      color: var(--copper-light);
+      border: 1px solid rgba(205, 133, 63, 0.3);
+    }
+
+    /* Risk Assessment Panel */
+    .risk-panel {
+      background: var(--nexus-card);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .risk-meter {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .risk-meter-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    .risk-low { background: #10B981; }
+    .risk-moderate { background: #F59E0B; }
+    .risk-elevated { background: #F97316; }
+    .risk-critical { background: #EF4444; }
+
+    .risk-tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .risk-tier-badge.LOW { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .risk-tier-badge.MODERATE { background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .risk-tier-badge.ELEVATED { background: rgba(249, 115, 22, 0.15); color: #F97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+    .risk-tier-badge.CRITICAL { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Operations Log */
+    .ops-log-panel {
+      background: var(--nexus-card);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 20px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .ops-log-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.2s ease;
+    }
+
+    .ops-log-entry:hover {
+      background: rgba(205,133,63,0.04);
+    }
+
+    .ops-log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .ops-log-module {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .ops-log-module.PULSE { background: rgba(56, 189, 248, 0.15); color: #38BDF8; }
+    .ops-log-module.SENTINEL { background: rgba(167, 139, 250, 0.15); color: #A78BFA; }
+    .ops-log-module.CHRONOS { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+    .ops-log-module.PULSE_QUALITY { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+
+    .ops-log-severity {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .ops-log-severity.INFO { background: #38BDF8; }
+    .ops-log-severity.WARNING { background: #F59E0B; }
+    .ops-log-severity.CAUTION { background: #F97316; }
+    .ops-log-severity.CRITICAL { background: #EF4444; }
+
+    .ops-log-summary {
+      font-size: 13px;
+      color: var(--text-main);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .ops-log-time {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    /* Well Fusion Panel */
+    .fusion-panel {
+      background: var(--nexus-card);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .fusion-layer {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .fusion-layer:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .fusion-layer-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--copper-light);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fusion-layer-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .fusion-layer-dot.geocore { background: #10B981; }
+    .fusion-layer-dot.events { background: #EF4444; }
+    .fusion-layer-dot.telemetry { background: #38BDF8; }
+    .fusion-layer-dot.sentinel { background: #A78BFA; }
+    .fusion-layer-dot.advisory { background: #F59E0B; }
+
+    /* Well Selector */
+    .well-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .well-selector select {
+      background: var(--nexus-panel);
+      border: 1px solid var(--nexus-border);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      min-width: 240px;
+      cursor: pointer;
+    }
+
+    .well-selector select:focus {
+      outline: none;
+      border-color: var(--nexus-border-active);
+      box-shadow: 0 0 0 2px rgba(205, 133, 63, 0.2);
+    }
+
+    .btn-fuse {
+      padding: 10px 20px;
+      background: var(--nexus-gradient);
+      color: #0D0B09;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-fuse:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(205, 133, 63, 0.4);
+    }
+
+    /* Timeline Visualization */
+    .timeline-panel {
+      background: var(--nexus-card);
+      border: 1px solid var(--nexus-border);
+      border-radius: 12px;
+      padding: 24px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .timeline-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      border-left: 3px solid transparent;
+      padding-left: 12px;
+      margin-left: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .timeline-entry:hover {
+      background: rgba(205,133,63,0.04);
+    }
+
+    .timeline-entry.CRITICAL { border-left-color: #EF4444; }
+    .timeline-entry.SEVERE { border-left-color: #F97316; }
+    .timeline-entry.MODERATE { border-left-color: #F59E0B; }
+    .timeline-entry.MINOR { border-left-color: #38BDF8; }
+    .timeline-entry.WARNING { border-left-color: #F59E0B; }
+    .timeline-entry.INFO { border-left-color: #38BDF8; }
+    .timeline-entry.CAUTION { border-left-color: #F97316; }
+
+    .timeline-depth {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--copper-light);
+      flex-shrink: 0;
+      min-width: 80px;
+    }
+
+    .timeline-type {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .timeline-type.LOST_CIRCULATION { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+    .timeline-type.STUCK_PIPE { background: rgba(249, 115, 22, 0.15); color: #F97316; }
+    .timeline-type.PACKOFF { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+    .timeline-type.KICK { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+    .timeline-type.TIGHT_HOLE { background: rgba(56, 189, 248, 0.15); color: #38BDF8; }
+    .timeline-type.KICK_GAS { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+
+    .timeline-narrative {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    /* Loading Spinner */
+    .nexus-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .nexus-loading .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(205, 133, 63, 0.2);
+      border-top-color: var(--copper-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .comparison-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--copper-light);
+      border-bottom: 1px solid var(--nexus-border);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comparison-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .comparison-table tr:hover td {
+      background: rgba(205,133,63,0.04);
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .nexus-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 1024px) {
+      .nexus-grid { grid-template-columns: repeat(2, 1fr); }
+      .nexus-grid-2 { grid-template-columns: 1fr; }
+      .nexus-grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nexus-grid { grid-template-columns: 1fr; }
+      .nexus-container { padding: 12px; }
+    }
+
+    /* Scrollbar */
+    .ops-log-panel::-webkit-scrollbar,
+    .timeline-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .ops-log-panel::-webkit-scrollbar-track,
+    .timeline-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .ops-log-panel::-webkit-scrollbar-thumb,
+    .timeline-panel::-webkit-scrollbar-thumb {
+      background: rgba(205, 133, 63, 0.2);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== PORTAL HEADER ====== -->
+  <header class="portal-header">
+    <a href="/landing.html" class="portal-brand">
+      <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited">
+      <div class="portal-brand-text">
+        <h1>OIL INDIA LIMITED</h1>
+        <span class="portal-brand-sub">eRTMAC — NWIS NEXUS Command Center</span>
+      </div>
+    </a>
+    <nav class="portal-nav">
+      <a href="/landing.html" class="portal-nav-link">Home</a>
+      <a href="/pulse.html" class="portal-nav-link">📡 Pulse</a>
+      <a href="/sentinel.html" class="portal-nav-link">🛡️ Sentinel</a>
+      <a href="/chronos.html" class="portal-nav-link">⏱️ Chronos</a>
+      <a href="/geocore.html" class="portal-nav-link">💎 GeoCore</a>
+      <a href="/nexus.html" class="portal-nav-link active" style="color:#CD853F; font-weight:700;">⚡ NEXUS</a>
+    </nav>
+  </header>
+
+  <!-- ====== NEXUS DASHBOARD ====== -->
+  <main class="nexus-container">
+
+    <!-- Status Banner -->
+    <div class="nexus-banner" id="nexus-banner">
+      <div class="nexus-title-group">
+        <span class="nexus-icon">⚡</span>
+        <div>
+          <div class="nexus-title">NWIS NEXUS — Unified Operations Command Center</div>
+          <div class="nexus-subtitle">Cross-Module Intelligence Fusion • Decision Support • Phase 07</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span class="nexus-status-pill operational" id="overall-status-pill">
+          <span class="nexus-status-dot operational" id="overall-status-dot"></span>
+          <span id="overall-status-text">LOADING...</span>
+        </span>
+        <span class="nexus-timestamp" id="last-updated"></span>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="section-header">
+      <div class="section-title">📊 System KPIs <span class="section-badge">REAL-TIME</span></div>
+    </div>
+    <div class="nexus-grid" style="grid-template-columns: repeat(5, 1fr);" id="kpi-strip">
+      <div class="kpi-card quality">
+        <div class="kpi-value" id="kpi-evidence">—</div>
+        <div class="kpi-label">Evidence Quality</div>
+        <div class="kpi-sublabel" id="kpi-evidence-sub">Verified events</div>
+      </div>
+      <div class="kpi-card resolution">
+        <div class="kpi-value" id="kpi-resolution">—</div>
+        <div class="kpi-label">Advisory Resolution</div>
+        <div class="kpi-sublabel" id="kpi-resolution-sub">Resolved advisories</div>
+      </div>
+      <div class="kpi-card uptime">
+        <div class="kpi-value" id="kpi-uptime">—</div>
+        <div class="kpi-label">Telemetry Uptime</div>
+        <div class="kpi-sublabel" id="kpi-uptime-sub">Online sources</div>
+      </div>
+      <div class="kpi-card sentinel">
+        <div class="kpi-value" id="kpi-sentinel">—</div>
+        <div class="kpi-label">Sentinel Accuracy</div>
+        <div class="kpi-sublabel" id="kpi-sentinel-sub">Query success</div>
+      </div>
+      <div class="kpi-card npt">
+        <div class="kpi-value" id="kpi-npt">—</div>
+        <div class="kpi-label">NPT Exposure</div>
+        <div class="kpi-sublabel" id="kpi-npt-sub">Total non-productive time</div>
+      </div>
+    </div>
+
+    <!-- Module Health Cards -->
+    <div class="section-header">
+      <div class="section-title">🏗️ Module Health <span class="section-badge">LIVE STATUS</span></div>
+    </div>
+    <div class="nexus-grid" style="grid-template-columns: repeat(5, 1fr);" id="module-health-grid">
+      <!-- Populated by JS -->
+      <div class="module-card">
+        <div class="module-card-header">
+          <span class="module-name">💎 GeoCore</span>
+          <span class="module-status-badge standby" id="mod-geocore-badge">LOADING</span>
+        </div>
+        <div id="mod-geocore-metrics">
+          <div class="nexus-loading"><div class="spinner"></div>Loading...</div>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-card-header">
+          <span class="module-name">⏱️ Chronos</span>
+          <span class="module-status-badge standby" id="mod-chronos-badge">LOADING</span>
+        </div>
+        <div id="mod-chronos-metrics">
+          <div class="nexus-loading"><div class="spinner"></div>Loading...</div>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-card-header">
+          <span class="module-name">🛡️ Sentinel</span>
+          <span class="module-status-badge standby" id="mod-sentinel-badge">LOADING</span>
+        </div>
+        <div id="mod-sentinel-metrics">
+          <div class="nexus-loading"><div class="spinner"></div>Loading...</div>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-card-header">
+          <span class="module-name">📡 Pulse</span>
+          <span class="module-status-badge standby" id="mod-pulse-badge">LOADING</span>
+        </div>
+        <div id="mod-pulse-metrics">
+          <div class="nexus-loading"><div class="spinner"></div>Loading...</div>
+        </div>
+      </div>
+      <div class="module-card">
+        <div class="module-card-header">
+          <span class="module-name">📄 Document AI</span>
+          <span class="module-status-badge standby" id="mod-docai-badge">LOADING</span>
+        </div>
+        <div id="mod-docai-metrics">
+          <div class="nexus-loading"><div class="spinner"></div>Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Well Intelligence Fusion + Risk Assessment -->
+    <div class="section-header">
+      <div class="section-title">🔗 Cross-Module Intelligence Fusion <span class="section-badge">EVIDENCE-BACKED</span></div>
+    </div>
+    <div class="well-selector">
+      <select id="well-selector">
+        <option value="">— Select Well for Intelligence Fusion —</option>
+      </select>
+      <button class="btn-fuse" onclick="fuseWell()">⚡ Fuse Intelligence</button>
+    </div>
+    <div class="nexus-grid-2">
+      <div class="fusion-panel" id="fusion-panel">
+        <div class="empty-state">Select a well and click "Fuse Intelligence" to generate a cross-module assessment.</div>
+      </div>
+      <div class="risk-panel" id="risk-panel">
+        <div class="empty-state">Risk assessment will appear here after fusion.</div>
+      </div>
+    </div>
+
+    <!-- Alert Timeline + Operations Log -->
+    <div class="section-header">
+      <div class="section-title">📜 Operations Log & Alert Timeline <span class="section-badge">SHIFT HANDOVER</span></div>
+    </div>
+    <div class="nexus-grid-2">
+      <div>
+        <h3 style="font-size:14px; font-weight:700; color:var(--copper-light); margin-bottom:12px;">📋 Operations Log</h3>
+        <div class="ops-log-panel" id="ops-log-panel">
+          <div class="nexus-loading"><div class="spinner"></div>Loading operations log...</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:14px; font-weight:700; color:var(--copper-light); margin-bottom:12px;">📍 Depth-Indexed Alert Timeline</h3>
+        <div class="timeline-panel" id="timeline-panel">
+          <div class="nexus-loading"><div class="spinner"></div>Loading timeline...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Well Comparison -->
+    <div class="section-header">
+      <div class="section-title">📊 Multi-Well Comparison Matrix <span class="section-badge">CROSS-REFERENCE</span></div>
+    </div>
+    <div class="fusion-panel" id="comparison-panel">
+      <div id="comparison-content">
+        <div class="nexus-loading"><div class="spinner"></div>Loading well comparison...</div>
+      </div>
+    </div>
+
+    <!-- Safety Disclaimer -->
+    <div style="margin-top:24px; padding:16px 20px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; text-align:center;">
+      <p style="font-size:12px; color:#EF4444; font-weight:600; margin:0;">
+        ⚠️ NWIS is a read-only advisory decision-support system. It does not replace certified Well Control systems, blowout preventers, or experienced engineering supervision.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = '/api/v1/nexus';
+
+    // =====================================================================
+    // INITIALIZATION
+    // =====================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSystemHealth();
+      loadKPIs();
+      loadOpsLog();
+      loadTimeline();
+      loadWellSelector();
+      loadComparison();
+    });
+
+    // =====================================================================
+    // SYSTEM HEALTH
+    // =====================================================================
+    async function loadSystemHealth() {
+      try {
+        const resp = await fetch(`${API_BASE}/health`);
+        const data = await resp.json();
+
+        // Overall status
+        const statusText = document.getElementById('overall-status-text');
+        const statusPill = document.getElementById('overall-status-pill');
+        const statusDot = document.getElementById('overall-status-dot');
+        const lastUpdated = document.getElementById('last-updated');
+
+        statusText.textContent = data.overall_status;
+        lastUpdated.textContent = new Date(data.timestamp).toLocaleString();
+
+        const statusClass = data.overall_status.includes('OPERATIONAL') ? 'operational' :
+                           data.overall_status === 'DEGRADED' ? 'degraded' : 'standby';
+        statusPill.className = `nexus-status-pill ${statusClass}`;
+        statusDot.className = `nexus-status-dot ${statusClass}`;
+
+        // Module cards
+        renderModuleCard('geocore', data.modules.geocore);
+        renderModuleCard('chronos', data.modules.chronos);
+        renderModuleCard('sentinel', data.modules.sentinel);
+        renderModuleCard('pulse', data.modules.pulse);
+        renderModuleCard('docai', data.modules.document_ai);
+      } catch (err) {
+        console.error('System health load failed:', err);
+      }
+    }
+
+    function renderModuleCard(modId, modData) {
+      const badge = document.getElementById(`mod-${modId}-badge`);
+      const metricsEl = document.getElementById(`mod-${modId}-metrics`);
+
+      const statusClass = modData.status === 'OPERATIONAL' ? 'operational' :
+                          modData.status === 'INITIALIZING' ? 'initializing' :
+                          modData.status === 'DEGRADED' ? 'degraded' : 'standby';
+      badge.textContent = modData.status;
+      badge.className = `module-status-badge ${statusClass}`;
+
+      let metricsHTML = '';
+      for (const [key, value] of Object.entries(modData)) {
+        if (key === 'status') continue;
+        const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const displayVal = typeof value === 'boolean' ? (value ? '✅ Yes' : '❌ No') : value;
+        metricsHTML += `
+          <div class="module-metric">
+            <span class="module-metric-label">${label}</span>
+            <span class="module-metric-value">${displayVal}</span>
+          </div>`;
+      }
+      metricsEl.innerHTML = metricsHTML;
+    }
+
+    // =====================================================================
+    // KPIs
+    // =====================================================================
+    async function loadKPIs() {
+      try {
+        const resp = await fetch(`${API_BASE}/kpis`);
+        const data = await resp.json();
+        const k = data.kpis;
+
+        document.getElementById('kpi-evidence').textContent = `${k.evidence_quality.verified_events_pct}%`;
+        document.getElementById('kpi-evidence-sub').textContent = `${k.evidence_quality.verified_events}/${k.evidence_quality.total_events} events`;
+
+        document.getElementById('kpi-resolution').textContent = `${k.advisory_resolution.resolution_rate_pct}%`;
+        document.getElementById('kpi-resolution-sub').textContent = `${k.advisory_resolution.resolved}/${k.advisory_resolution.total_advisories} advisories`;
+
+        document.getElementById('kpi-uptime').textContent = `${k.telemetry_uptime.uptime_pct}%`;
+        document.getElementById('kpi-uptime-sub').textContent = `${k.telemetry_uptime.online_sources}/${k.telemetry_uptime.total_sources} sources`;
+
+        document.getElementById('kpi-sentinel').textContent = `${k.sentinel_performance.query_success_rate_pct}%`;
+        document.getElementById('kpi-sentinel-sub').textContent = `${k.sentinel_performance.knowledge_chunks} chunks`;
+
+        document.getElementById('kpi-npt').textContent = `${k.npt_exposure.total_npt_hours}h`;
+        document.getElementById('kpi-npt-sub').textContent = `Avg ${k.npt_exposure.avg_npt_per_event}h/event`;
+      } catch (err) {
+        console.error('KPI load failed:', err);
+      }
+    }
+
+    // =====================================================================
+    // OPERATIONS LOG
+    // =====================================================================
+    async function loadOpsLog() {
+      try {
+        const resp = await fetch(`${API_BASE}/operations-log?limit=30`);
+        const data = await resp.json();
+        const panel = document.getElementById('ops-log-panel');
+
+        if (!data.operations_log || data.operations_log.length === 0) {
+          panel.innerHTML = '<div class="empty-state">No operations log entries yet.</div>';
+          return;
+        }
+
+        let html = '';
+        for (const entry of data.operations_log) {
+          const time = new Date(entry.timestamp).toLocaleTimeString();
+          html += `
+            <div class="ops-log-entry">
+              <span class="ops-log-module ${entry.source_module}">${entry.source_module}</span>
+              <span class="ops-log-severity ${entry.severity}"></span>
+              <span class="ops-log-summary">${escapeHTML(entry.summary)}</span>
+              <span class="ops-log-time">${time}</span>
+            </div>`;
+        }
+        panel.innerHTML = html;
+      } catch (err) {
+        document.getElementById('ops-log-panel').innerHTML = '<div class="empty-state">Operations log unavailable.</div>';
+      }
+    }
+
+    // =====================================================================
+    // ALERT TIMELINE
+    // =====================================================================
+    async function loadTimeline() {
+      try {
+        const resp = await fetch(`${API_BASE}/timeline`);
+        const data = await resp.json();
+        const panel = document.getElementById('timeline-panel');
+
+        if (!data.timeline || data.timeline.length === 0) {
+          panel.innerHTML = '<div class="empty-state">No events in timeline.</div>';
+          return;
+        }
+
+        let html = '';
+        for (const entry of data.timeline) {
+          html += `
+            <div class="timeline-entry ${entry.severity}">
+              <span class="timeline-depth">${entry.depth_md_m.toFixed(1)}m MD</span>
+              <span class="timeline-type ${entry.event_type}">${entry.event_type}</span>
+              <span class="timeline-narrative">${escapeHTML(entry.narrative)} <em style="color:var(--text-dim);">[${entry.formation}]</em></span>
+            </div>`;
+        }
+        panel.innerHTML = html;
+      } catch (err) {
+        document.getElementById('timeline-panel').innerHTML = '<div class="empty-state">Timeline unavailable.</div>';
+      }
+    }
+
+    // =====================================================================
+    // WELL SELECTOR
+    // =====================================================================
+    async function loadWellSelector() {
+      try {
+        const resp = await fetch('/api/v1/wells/');
+        const wells = await resp.json();
+        const selector = document.getElementById('well-selector');
+
+        for (const w of wells) {
+          const opt = document.createElement('option');
+          opt.value = w.well_id;
+          opt.textContent = `${w.well_name} (${w.well_id}) — ${w.field_name}`;
+          selector.appendChild(opt);
+        }
+      } catch (err) {
+        console.error('Failed to load wells:', err);
+      }
+    }
+
+    // =====================================================================
+    // INTELLIGENCE FUSION
+    // =====================================================================
+    async function fuseWell() {
+      const wellId = document.getElementById('well-selector').value;
+      if (!wellId) return alert('Please select a well first.');
+
+      const fusionPanel = document.getElementById('fusion-panel');
+      const riskPanel = document.getElementById('risk-panel');
+
+      fusionPanel.innerHTML = '<div class="nexus-loading"><div class="spinner"></div>Fusing intelligence across all modules...</div>';
+      riskPanel.innerHTML = '<div class="nexus-loading"><div class="spinner"></div>Computing risk assessment...</div>';
+
+      try {
+        const resp = await fetch(`${API_BASE}/fuse/${wellId}`);
+        const data = await resp.json();
+
+        if (data.status === 'WELL_NOT_FOUND') {
+          fusionPanel.innerHTML = `<div class="empty-state">Well not found: ${data.abstention_reason}</div>`;
+          riskPanel.innerHTML = '<div class="empty-state">No risk data available.</div>';
+          return;
+        }
+
+        // Render fusion layers
+        let fusionHTML = '';
+
+        // GeoCore Layer
+        const geo = data.geocore_layer;
+        fusionHTML += `
+          <div class="fusion-layer">
+            <div class="fusion-layer-header"><span class="fusion-layer-dot geocore"></span> GeoCore — Geological Context</div>
+            <div class="module-metric"><span class="module-metric-label">Well Name</span><span class="module-metric-value">${geo.well_name}</span></div>
+            <div class="module-metric"><span class="module-metric-label">Field</span><span class="module-metric-value">${geo.field}</span></div>
+            <div class="module-metric"><span class="module-metric-label">Total Depth</span><span class="module-metric-value">${geo.total_depth_md_m || 'N/A'} m MD</span></div>
+            <div class="module-metric"><span class="module-metric-label">Survey Stations</span><span class="module-metric-value">${geo.survey_stations}</span></div>
+            <div class="module-metric"><span class="module-metric-label">Formation Tops</span><span class="module-metric-value">${geo.formation_tops.length}</span></div>
+          </div>`;
+
+        // Historical Events Layer
+        const events = data.historical_events_layer;
+        fusionHTML += `
+          <div class="fusion-layer">
+            <div class="fusion-layer-header"><span class="fusion-layer-dot events"></span> Historical Events — ${events.total_events} Events</div>
+            <div class="module-metric"><span class="module-metric-label">Total NPT</span><span class="module-metric-value">${events.total_npt_hours.toFixed(1)}h</span></div>`;
+        for (const [sev, count] of Object.entries(events.events_by_severity || {})) {
+          fusionHTML += `<div class="module-metric"><span class="module-metric-label">${sev}</span><span class="module-metric-value">${count}</span></div>`;
+        }
+        fusionHTML += `</div>`;
+
+        // Telemetry Layer
+        if (data.telemetry_layer) {
+          const tel = data.telemetry_layer;
+          fusionHTML += `
+            <div class="fusion-layer">
+              <div class="fusion-layer-header"><span class="fusion-layer-dot telemetry"></span> Live Telemetry — ${tel.quality_state}</div>
+              <div class="module-metric"><span class="module-metric-label">Depth</span><span class="module-metric-value">${tel.md_m} m MD</span></div>
+              <div class="module-metric"><span class="module-metric-label">ROP</span><span class="module-metric-value">${tel.rop_m_hr || 'N/A'} m/hr</span></div>
+              <div class="module-metric"><span class="module-metric-label">Formation</span><span class="module-metric-value">${tel.current_formation || 'N/A'}</span></div>
+            </div>`;
+        } else {
+          fusionHTML += `
+            <div class="fusion-layer">
+              <div class="fusion-layer-header"><span class="fusion-layer-dot telemetry"></span> Live Telemetry — NO DATA</div>
+              <div class="empty-state" style="padding:8px;">No telemetry data available for this well.</div>
+            </div>`;
+        }
+
+        // Sentinel Layer
+        fusionHTML += `
+          <div class="fusion-layer">
+            <div class="fusion-layer-header"><span class="fusion-layer-dot sentinel"></span> Sentinel Knowledge — ${data.sentinel_layer.sentinel_status}</div>
+            <div class="module-metric"><span class="module-metric-label">Knowledge Chunks</span><span class="module-metric-value">${data.sentinel_layer.knowledge_chunks}</span></div>
+          </div>`;
+
+        // Advisory Layer
+        fusionHTML += `
+          <div class="fusion-layer">
+            <div class="fusion-layer-header"><span class="fusion-layer-dot advisory"></span> Advisories — ${data.advisory_layer.total_advisories} Total</div>
+            <div class="module-metric"><span class="module-metric-label">Active</span><span class="module-metric-value">${data.advisory_layer.active}</span></div>
+            <div class="module-metric"><span class="module-metric-label">Resolved</span><span class="module-metric-value">${data.advisory_layer.resolved}</span></div>
+          </div>`;
+
+        // Integrity
+        fusionHTML += `
+          <div style="margin-top:12px; padding:8px 12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:6px;">
+            <span style="font-size:11px; color:#10B981; font-family:var(--font-mono);">
+              🔒 SHA-256: ${data.fusion_integrity_sha256.substring(0, 32)}...
+            </span>
+          </div>`;
+
+        fusionPanel.innerHTML = fusionHTML;
+
+        // Render Risk Assessment
+        const risk = data.risk_assessment;
+        const riskColor = risk.risk_tier === 'LOW' ? 'risk-low' :
+                          risk.risk_tier === 'MODERATE' ? 'risk-moderate' :
+                          risk.risk_tier === 'ELEVATED' ? 'risk-elevated' : 'risk-critical';
+        
+        let riskHTML = `
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h3 style="font-size:16px; font-weight:700; color:var(--copper-light);">⚠️ Risk Assessment</h3>
+            <span class="risk-tier-badge ${risk.risk_tier}">${risk.risk_tier}</span>
+          </div>
+          
+          <div style="font-size:36px; font-weight:800; font-family:var(--font-mono); text-align:center; margin:20px 0;">
+            ${risk.composite_score}<span style="font-size:16px; color:var(--text-muted);">/100</span>
+          </div>
+          
+          <div class="risk-meter">
+            <div class="risk-meter-fill ${riskColor}" style="width:${risk.composite_score}%;"></div>
+          </div>
+          
+          <div style="margin-top:16px;">
+            <div class="module-metric">
+              <span class="module-metric-label">Historical Risk</span>
+              <span class="module-metric-value">${risk.components.historical_risk.score} (×${risk.components.historical_risk.weight})</span>
+            </div>
+            <div class="module-metric">
+              <span class="module-metric-label">Advisory Risk</span>
+              <span class="module-metric-value">${risk.components.advisory_risk.score} (×${risk.components.advisory_risk.weight})</span>
+            </div>
+            <div class="module-metric">
+              <span class="module-metric-label">Telemetry Risk</span>
+              <span class="module-metric-value">${risk.components.telemetry_quality_risk.score} (×${risk.components.telemetry_quality_risk.weight})</span>
+            </div>
+          </div>
+          
+          <div style="margin-top:16px; padding:10px 14px; background:rgba(205,133,63,0.08); border:1px solid rgba(205,133,63,0.2); border-radius:8px;">
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin:0;">
+              ${risk.explanation}
+            </p>
+          </div>`;
+
+        riskPanel.innerHTML = riskHTML;
+
+      } catch (err) {
+        fusionPanel.innerHTML = `<div class="empty-state">Fusion failed: ${err.message}</div>`;
+        riskPanel.innerHTML = '<div class="empty-state">Risk assessment unavailable.</div>';
+      }
+    }
+
+    // =====================================================================
+    // MULTI-WELL COMPARISON
+    // =====================================================================
+    async function loadComparison() {
+      try {
+        const wellResp = await fetch('/api/v1/wells/');
+        const wells = await wellResp.json();
+        
+        if (!wells || wells.length < 2) {
+          document.getElementById('comparison-content').innerHTML = '<div class="empty-state">Need at least 2 wells for comparison.</div>';
+          return;
+        }
+
+        const wellIds = wells.slice(0, 6).map(w => w.well_id);
+        const resp = await fetch(`${API_BASE}/compare`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ well_ids: wellIds })
+        });
+        const data = await resp.json();
+
+        if (!data.comparison_matrix || data.comparison_matrix.length === 0) {
+          document.getElementById('comparison-content').innerHTML = '<div class="empty-state">No comparison data available.</div>';
+          return;
+        }
+
+        let html = `<table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Well</th>
+              <th>Field</th>
+              <th>TD (m MD)</th>
+              <th>Formations</th>
+              <th>Events</th>
+              <th>NPT (h)</th>
+              <th>Active Alerts</th>
+              <th>Knowledge</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+        for (const well of data.comparison_matrix) {
+          if (well.status === 'NOT_FOUND') continue;
+          html += `
+            <tr>
+              <td style="color:var(--copper-light); font-weight:600;">${well.well_name || well.well_id}</td>
+              <td>${well.field || '—'}</td>
+              <td>${well.total_depth_md_m || '—'}</td>
+              <td>${well.formations_count}</td>
+              <td>${well.events_count}</td>
+              <td>${well.total_npt_hours}</td>
+              <td>${well.active_advisories}</td>
+              <td>${well.knowledge_chunks} chunks</td>
+            </tr>`;
+        }
+        html += '</tbody></table>';
+
+        document.getElementById('comparison-content').innerHTML = html;
+      } catch (err) {
+        document.getElementById('comparison-content').innerHTML = '<div class="empty-state">Comparison unavailable.</div>';
+      }
+    }
+
+    // =====================================================================
+    // UTILITIES
+    // =====================================================================
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+  </script>
+
+</body>
+</html>

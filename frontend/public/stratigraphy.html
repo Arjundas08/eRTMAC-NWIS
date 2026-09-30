@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Stratigraphy & Well Trajectories | eRTMAC-NWIS</title>
+  <meta name="description" content="3D Subsurface geological modeling and TVDSS depth correlation for Oil India Limited drilling operations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    .strata-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .strat-track-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .strat-horizon-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 4px solid var(--layer-color, #CD853F);
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      transition: all 0.2s ease;
+    }
+    .strat-horizon-row:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .strat-horizon-row.active {
+      background: rgba(205, 133, 63, 0.2);
+      border-left-width: 6px;
+    }
+    .img-zoom-card {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: #0D0B09;
+      cursor: zoom-in;
+    }
+    .img-zoom-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .img-zoom-card:hover img {
+      transform: scale(1.02);
+    }
+    .zoom-hint {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(4, 13, 24, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      color: var(--teal-light);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Executive Navigation Bar -->
+  <header class="portal-header">
+    <a href="/landing.html" class="portal-brand">
+      <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited">
+      <div class="portal-brand-text">
+        <h1>OIL INDIA LIMITED</h1>
+        <span>eRTMAC — NWIS Platform</span>
+      </div>
+    </a>
+
+    <nav class="portal-nav">
+      <a href="/landing.html" class="portal-nav-btn">🏛️ Home</a>
+      <a href="/geocore.html" class="portal-nav-btn">💎 GeoCore</a>
+      <a href="/radar.html" class="portal-nav-btn">🛰️ Offset Radar</a>
+      <a href="/stratigraphy.html" class="portal-nav-btn active">🌋 3D Strata</a>
+      <a href="/lookahead.html" class="portal-nav-btn">⚡ Look-Ahead</a>
+      <a href="/documents.html" class="portal-nav-btn">📄 Document AI</a>
+      <a href="/copilot.html" class="portal-nav-btn">🤖 AI Copilot</a>
+      <a href="/backtest.html" class="portal-nav-btn">📊 Back-Test</a>
+    </nav>
+
+    <div class="portal-header-right">
+      <div class="well-select-wrap">
+        <span>ACTIVE RIG:</span>
+        <select class="well-select" id="well-selector">
+          <option value="NO-15/9-F-12" selected>RIG-OIL-09 (F-12)</option>
+          <option value="NO-15/9-F-14">RIG-OIL-14 (F-14)</option>
+        </select>
+      </div>
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span>WITSML 1 Hz</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Hero Bar -->
+  <div class="page-hero-bar">
+    <div class="page-title-group">
+      <h2><span style="color:var(--amber-accent);">🌋</span> 3D Stratigraphy & Subsurface Modeling</h2>
+      <p>True Vertical Depth Sub-Sea (TVDSS) depth normalization, Minimum Curvature wellbore trajectories, and pinned offset incidents.</p>
+    </div>
+    <div class="page-hero-actions">
+      <a href="/radar.html" class="btn btn-secondary">← Back to Radar</a>
+      <a href="/lookahead.html" class="btn btn-amber">Proceed to Pre-Bit Look-Ahead →</a>
+    </div>
+  </div>
+
+  <!-- Main Content Workspace -->
+  <main class="portal-content">
+    
+    <!-- Real-Time Telemetry Strip -->
+    <div class="telemetry-strip">
+      <div class="telem-box">
+        <span class="telem-label">BIT DEPTH (MD)</span>
+        <span class="telem-val cyan">2893.5 <small style="font-size:0.75rem;">m</small></span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">SUBSEA DEPTH (TVDSS)</span>
+        <span class="telem-val amber">2850.0 <small style="font-size:0.75rem;">m</small></span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">STRATIGRAPHIC FORMATION</span>
+        <span class="telem-val green">Hugin FM</span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">RATE OF PENETRATION</span>
+        <span class="telem-val">14.2 <small style="font-size:0.75rem;">m/hr</small></span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">TORQUE / SPP</span>
+        <span class="telem-val">15.2 kft-lb / 2900 psi</span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">HORIZON STATUS</span>
+        <span class="telem-val red" style="font-size:0.95rem;">⚠ SKADE HAZARD ZONE</span>
+      </div>
+    </div>
+
+    <!-- 3D Strata Grid -->
+    <div class="strata-grid">
+      
+      <!-- Left: 3D Geological Horizon Model Graphic -->
+      <div class="card">
+        <div class="card-header">
+          <h3>3D Geological Horizon Model & Trajectories</h3>
+          <span class="tag tag-amber">VOLVE BENCHMARK</span>
+        </div>
+        <div class="card-body">
+          <div class="img-zoom-card" onclick="window.open('/assets/images/subsurface-strata-3d.png', '_blank')">
+            <img src="/assets/images/subsurface-strata-3d.png" alt="3D Stratigraphic Geological Subsurface Model">
+            <span class="zoom-hint">🔍 Click to Expand High-Res Model</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:14px; line-height:1.5;">
+            Shaded surfaces represent major stratigraphic boundaries. The green trajectory traces Active Well NO-15/9-F-12 entering the Hugin Sandstone reservoir. Blue and purple dashed vectors illustrate historical offset wells NO-15/9-F-14 (severe mud loss) and NO-15/9-F-15S (differential sticking).
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Stratigraphic TVDSS Depth Column -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Stratigraphic Column Track (TVDSS)</h3>
+          <span class="tag tag-amber">PINNED HISTORICAL INCIDENTS</span>
+        </div>
+        <div class="card-body">
+          <div class="strat-track-box">
+            
+            <div class="strat-horizon-row" style="--layer-color:#4A7C9B;">
+              <div>
+                <strong>Nordland Shale GP</strong>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Overburden Claystone</div>
+              </div>
+              <span style="color:var(--text-muted);">720 m</span>
+              <span class="tag tag-green">✓ Nominal</span>
+            </div>
+
+            <div class="strat-horizon-row" style="--layer-color:#0284C7;">
+              <div>
+                <strong>Utsira Sand Formation</strong>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Highly Permeable Sandstone</div>
+              </div>
+              <span style="color:var(--text-muted);">1750 m</span>
+              <span class="tag tag-green">✓ Nominal</span>
+            </div>
+
+            <div class="strat-horizon-row active" style="--layer-color:#E53E3E;">
+              <div>
+                <strong style="color:var(--red-hazard);">Skade Sandstone Member</strong>
+                <div style="font-size:0.7rem; color:#FCA5A5;">Depleted Sandstone Zone</div>
+              </div>
+              <span style="color:var(--amber-accent); font-weight:bold;">2400 m</span>
+              <span class="tag tag-red">⚠ 42 m³ Mud Loss (F-14)</span>
+            </div>
+
+            <div class="strat-horizon-row" style="--layer-color:#F59E0B;">
+              <div>
+                <strong>Draupne Bituminous Shale</strong>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Source Rock / Top Seal</div>
+              </div>
+              <span style="color:var(--text-muted);">2700 m</span>
+              <span class="tag tag-amber">⚠ Stuck Pipe (F-15S)</span>
+            </div>
+
+            <div class="strat-horizon-row active" style="--layer-color:#22C55E;">
+              <div>
+                <strong style="color:var(--green-safe);">Hugin Sandstone Reservoir</strong>
+                <div style="font-size:0.7rem; color:#86EFAC;">Primary Hydrocarbon Target</div>
+              </div>
+              <span style="color:var(--green-safe); font-weight:bold;">2850 m</span>
+              <span class="tag tag-green">🎯 Current Bit Target</span>
+            </div>
+
+            <div class="strat-horizon-row" style="--layer-color:#64748B;">
+              <div>
+                <strong>Triassic Smith Bank FM</strong>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Basement Siltstone</div>
+              </div>
+              <span style="color:var(--text-muted);">3400 m</span>
+              <span class="tag tag-cyan">Unpenetrated</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom: Multi-Well Petrophysical Correlation Panel -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Multi-Well Petrophysical & Event Correlation Panel (Wireline GR & Resistivity)</h3>
+        <span class="tag tag-amber">PREDICTIVE MITIGATION MATRIX</span>
+      </div>
+      <div class="card-body">
+        <div class="img-zoom-card" onclick="window.open('/assets/images/offset-well-correlation.png', '_blank')">
+          <img src="/assets/images/offset-well-correlation.png" alt="Multi-Well Petrophysical Correlation">
+          <span class="zoom-hint">🔍 Click to Expand Correlation Panel</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="portal-footer">
+    <div><strong>OIL INDIA LIMITED</strong> — eRTMAC Nearby Wells Intelligence System</div>
+    <div>Stratigraphic Correlation Method: TVDSS Normalization with Minimum Curvature Trajectory Mapping</div>
+  </footer>
+
+</body>
+</html>

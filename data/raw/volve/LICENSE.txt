@@ -1,0 +1,19 @@
+Equinor Volve Field Data License Notice
+=========================================
+
+The data files in this repository originated from the Equinor Volve Field Data,
+publicly released by Equinor Energy AS (formerly Statoil Petroleum AS) in 2018.
+
+License Terms:
+--------------
+The data is provided for research, educational, study, and software evaluation purposes.
+Any publication, software application, or academic contribution referencing this data
+must provide appropriate attribution:
+
+Attribution:
+"Data provided by Equinor Energy AS and the Volve field license partners (ExxonMobil E&P Norway AS and Bayerngas Norge AS)."
+
+Permitted Use:
+- Research and development of drilling analytics, offset-well intelligence, and machine learning models.
+- Hackathon evaluation, academic validation, and peer review.
+- Data is provided "as is" without warranties of any kind.

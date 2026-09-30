@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geospatial Offset Radar | eRTMAC-NWIS</title>
+  <meta name="description" content="Geospatial offset well radar scanning and proximity analysis for Oil India Limited drilling operations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    .radar-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      height: calc(100vh - 180px);
+      min-height: 600px;
+    }
+    .radar-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .map-frame {
+      border-radius: 12px;
+      border: 1px solid var(--border-accent);
+      overflow: hidden;
+      position: relative;
+      background: #0D0B09;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+    }
+    #map-container {
+      width: 100%;
+      height: 100%;
+    }
+    .well-item {
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .well-item:hover, .well-item.selected {
+      background: rgba(205, 133, 63, 0.15);
+      border-color: var(--copper-primary);
+    }
+    .well-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .well-item-name {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+    .well-item-dist {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--amber-accent);
+      font-weight: 700;
+    }
+    .well-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+    }
+    .radar-controls-card {
+      padding: 18px;
+      background: rgba(30, 26, 22, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+    }
+    .slider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .custom-range {
+      width: 100%;
+      accent-color: var(--teal-light);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Executive Navigation Bar -->
+  <header class="portal-header">
+    <a href="/landing.html" class="portal-brand">
+      <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited">
+      <div class="portal-brand-text">
+        <h1>OIL INDIA LIMITED</h1>
+        <span>eRTMAC — NWIS Platform</span>
+      </div>
+    </a>
+
+    <nav class="portal-nav">
+      <a href="/landing.html" class="portal-nav-btn">🏛️ Home</a>
+      <a href="/sentinel.html" class="portal-nav-btn">🛡️ Sentinel AI</a>
+      <a href="/geocore.html" class="portal-nav-btn">💎 GeoCore</a>
+      <a href="/radar.html" class="portal-nav-btn active">🛰️ Offset Radar</a>
+      <a href="/stratigraphy.html" class="portal-nav-btn">🌋 3D Strata</a>
+      <a href="/chronos.html" class="portal-nav-btn">⏱️ Chronos Replay</a>
+      <a href="/lookahead.html" class="portal-nav-btn">⚡ Look-Ahead</a>
+      <a href="/documents.html" class="portal-nav-btn">📄 Document AI</a>
+      <a href="/copilot.html" class="portal-nav-btn">🤖 AI Copilot</a>
+      <a href="/backtest.html" class="portal-nav-btn">📊 Back-Test</a>
+    </nav>
+
+    <div class="portal-header-right">
+      <div class="well-select-wrap">
+        <span>ACTIVE RIG:</span>
+        <select class="well-select" id="well-selector">
+          <option value="NO-15/9-F-12" selected>RIG-OIL-09 (F-12)</option>
+          <option value="NO-15/9-F-14">RIG-OIL-14 (F-14)</option>
+          <option value="NO-15/9-F-15S">RIG-OIL-15 (F-15S)</option>
+        </select>
+      </div>
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span>WITSML 1 Hz</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Hero Bar -->
+  <div class="page-hero-bar">
+    <div class="page-title-group">
+      <h2><span style="color:var(--amber-accent);">🛰️</span> Geospatial Offset Well Radar</h2>
+      <p>Proximity scanning, distance-weighted analogue ranking, and spatial collision corridor detection across the Volve field.</p>
+    </div>
+    <div class="page-hero-actions">
+      <button class="btn btn-secondary" onclick="resetMapView()">⟲ Reset Center</button>
+      <a href="/stratigraphy.html" class="btn btn-primary">Proceed to 3D Strata →</a>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <main class="portal-content">
+    <div class="radar-layout">
+      
+      <!-- Left Sidebar: Controls & Well List -->
+      <aside class="radar-sidebar">
+        
+        <div class="radar-controls-card">
+          <div class="slider-row">
+            <span>PROXIMITY SEARCH RADIUS:</span>
+            <span id="radius-val" style="color:var(--amber-accent); font-family:var(--font-mono); font-weight:700;">5.0 km</span>
+          </div>
+          <input type="range" id="radius-slider" class="custom-range" min="1.0" max="15.0" step="0.5" value="5.0">
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between;">
+            <span>1 km (Immediate)</span>
+            <span>15 km (Regional)</span>
+          </div>
+        </div>
+
+        <div class="card" style="flex:1; display:flex; flex-direction:column;">
+          <div class="card-header">
+            <h3>Detected Offset Wells (<span id="count-wells">4</span>)</h3>
+            <span class="tag tag-cyan">STRATIGRAPHY ALIGNED</span>
+          </div>
+          <div class="card-body" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px;" id="well-list-container">
+            
+            <div class="well-item selected" onclick="selectOffsetWell('NO-15/9-F-14', 58.441, 1.905)">
+              <div class="well-item-top">
+                <span class="well-item-name">NO-15/9-F-14</span>
+                <span class="well-item-dist">1.2 km away</span>
+              </div>
+              <div class="well-item-meta">
+                <span>SIMILARITY: <strong>94.2%</strong></span>
+                <span style="color:var(--red-hazard);">⚠ 42 m³ Mud Loss</span>
+              </div>
+            </div>
+
+            <div class="well-item" onclick="selectOffsetWell('NO-15/9-F-15S', 58.435, 1.918)">
+              <div class="well-item-top">
+                <span class="well-item-name">NO-15/9-F-15S</span>
+                <span class="well-item-dist">2.4 km away</span>
+              </div>
+              <div class="well-item-meta">
+                <span>SIMILARITY: <strong>88.1%</strong></span>
+                <span style="color:var(--amber-accent);">⚠ Stuck Pipe</span>
+              </div>
+            </div>
+
+            <div class="well-item" onclick="selectOffsetWell('NO-15/9-F-11', 58.449, 1.890)">
+              <div class="well-item-top">
+                <span class="well-item-name">NO-15/9-F-11</span>
+                <span class="well-item-dist">3.1 km away</span>
+              </div>
+              <div class="well-item-meta">
+                <span>SIMILARITY: <strong>82.5%</strong></span>
+                <span style="color:var(--green-safe);">✓ Normal Drilling</span>
+              </div>
+            </div>
+
+            <div class="well-item" onclick="selectOffsetWell('NO-15/9-F-4', 58.455, 1.930)">
+              <div class="well-item-top">
+                <span class="well-item-name">NO-15/9-F-4</span>
+                <span class="well-item-dist">4.8 km away</span>
+              </div>
+              <div class="well-item-meta">
+                <span>SIMILARITY: <strong>76.0%</strong></span>
+                <span style="color:var(--text-muted);">Tight Hole Event</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Right Main: Interactive Geospatial Leaflet Map -->
+      <section class="map-frame">
+        <div id="map-container"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="portal-footer">
+    <div><strong>OIL INDIA LIMITED</strong> — eRTMAC Nearby Wells Intelligence System | Equinor Volve Field Testbed</div>
+    <div>Strict Zero-Hallucination Evidence Contract Active | WITSML v1.4.1.1</div>
+  </footer>
+
+  <!-- Leaflet JS & Radar Controller -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    let map;
+    let radiusCircle;
+    const activeCoords = [58.445, 1.910];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      initRadiusSlider();
+    });
+
+    function initMap() {
+      map = L.map('map-container', {
+        zoomControl: true,
+        attributionControl: false
+      }).setView(activeCoords, 13);
+
+      // Dark futuristic tile layer
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        subdomains: 'abcd'
+      }).addTo(map);
+
+      // 5km Proximity Radar Radius Circle
+      radiusCircle = L.circle(activeCoords, {
+        radius: 5000,
+        color: '#CD853F',
+        fillColor: '#CD853F',
+        fillOpacity: 0.12,
+        weight: 1.5,
+        dashArray: '4, 4'
+      }).addTo(map);
+
+      // Active Well Marker (Gold pulsating)
+      const activeIcon = L.divIcon({
+        className: 'custom-pin-active',
+        html: `<div style="background:#E8A83D; width:18px; height:18px; border-radius:50%; border:3px solid #FFFFFF; box-shadow:0 0 14px #E8A83D;"></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
+
+      L.marker(activeCoords, { icon: activeIcon })
+        .addTo(map)
+        .bindPopup(`<strong>Active Well: NO-15/9-F-12</strong><br>Rig: RIG-OIL-09<br>Target: Hugin FM (2850m TVDSS)<br>Status: DRILLING LIVE`)
+        .openPopup();
+
+      // Offset Wells
+      const offsets = [
+        { id: 'NO-15/9-F-14', coords: [58.441, 1.905], dist: '1.2 km', sim: '94.2%', alert: '42 m³ Mud Loss at 2865m TVDSS', color: '#E53E3E' },
+        { id: 'NO-15/9-F-15S', coords: [58.435, 1.918], dist: '2.4 km', sim: '88.1%', alert: 'Stuck pipe in Draupne', color: '#F59E0B' },
+        { id: 'NO-15/9-F-11', coords: [58.449, 1.890], dist: '3.1 km', sim: '82.5%', alert: 'Normal drilling history', color: '#22C55E' },
+        { id: 'NO-15/9-F-4', coords: [58.455, 1.930], dist: '4.8 km', sim: '76.0%', alert: 'Tight hole at 2760m TVDSS', color: '#38BDF8' }
+      ];
+
+      offsets.forEach(w => {
+        const pinIcon = L.divIcon({
+          className: 'custom-pin-offset',
+          html: `<div style="background:${w.color}; width:14px; height:14px; border-radius:50%; border:2px solid #FFFFFF; box-shadow:0 0 10px ${w.color};"></div>`,
+          iconSize: [14, 14],
+          iconAnchor: [7, 7]
+        });
+
+        L.marker(w.coords, { icon: pinIcon })
+          .addTo(map)
+          .bindPopup(`<strong>Offset: ${w.id}</strong><br>Distance: ${w.dist}<br>Similarity: ${w.sim}<br><span style="color:${w.color}; font-weight:bold;">${w.alert}</span>`);
+      });
+    }
+
+    function initRadiusSlider() {
+      const slider = document.getElementById('radius-slider');
+      const valLabel = document.getElementById('radius-val');
+
+      slider.addEventListener('input', (e) => {
+        const rKm = parseFloat(e.target.value);
+        valLabel.textContent = `${rKm.toFixed(1)} km`;
+        if (radiusCircle) {
+          radiusCircle.setRadius(rKm * 1000);
+        }
+      });
+    }
+
+    function resetMapView() {
+      if (map) {
+        map.setView(activeCoords, 13);
+      }
+    }
+
+    function selectOffsetWell(name, lat, lng) {
+      if (map) {
+        map.flyTo([lat, lng], 14, { duration: 1.2 });
+      }
+    }
+  </script>
+</body>
+</html>

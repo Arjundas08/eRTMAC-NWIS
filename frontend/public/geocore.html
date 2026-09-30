@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NWIS GeoCore — Advanced Geological Intelligence & Offset Analysis | eRTMAC</title>
+  <meta name="description" content="Formation-aware subsurface depth correlation, explainable offset-well similarity, geological fingerprinting, and evidence-linked historical incident intelligence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    /* GeoCore Specific Styles */
+    .geocore-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 0 28px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      overflow-x: auto;
+    }
+    .geocore-tab-btn {
+      padding: 12px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .geocore-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(205, 133, 63, 0.05);
+    }
+    .geocore-tab-btn.active {
+      color: var(--copper-bright);
+      border-bottom-color: var(--copper-primary);
+      background: rgba(205, 133, 63, 0.1);
+    }
+
+    .geocore-view {
+      display: none;
+      padding: 24px 28px;
+    }
+    .geocore-view.active {
+      display: block;
+    }
+
+    /* Subsurface Corridor 3D Card */
+    .corridor-canvas-wrap {
+      height: 480px;
+      background: #0D0B09;
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fingerprint Audit Grid */
+    .fp-badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .fp-badge-item {
+      padding: 14px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .fp-badge-item.verified {
+      border-left: 4px solid var(--green-safe);
+      background: rgba(61, 184, 104, 0.05);
+    }
+    .fp-badge-item.derived {
+      border-left: 4px solid var(--copper-primary);
+      background: rgba(205, 133, 63, 0.05);
+    }
+    .fp-badge-item.missing {
+      border-left: 4px solid var(--red-hazard);
+      background: rgba(224, 80, 64, 0.05);
+    }
+    .fp-badge-item.uncertain {
+      border-left: 4px solid var(--gold-accent);
+      background: rgba(212, 168, 67, 0.05);
+    }
+
+    /* Comparison Head-to-Head Card */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    .comp-col {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .comp-col.winner {
+      border-color: var(--copper-primary);
+      box-shadow: 0 0 20px rgba(205, 133, 63, 0.15);
+    }
+
+    /* Aligned Depth Tracks */
+    .depth-track-container {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 16px 0;
+    }
+    .well-depth-column {
+      flex: 1;
+      min-width: 320px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    /* Evidence Modal */
+    .evidence-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(13, 11, 9, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .evidence-modal-overlay.active {
+      display: flex;
+    }
+    .evidence-modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 680px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Executive Navigation Bar -->
+  <header class="portal-header">
+    <a href="/landing.html" class="portal-brand">
+      <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited">
+      <div class="portal-brand-text">
+        <h1>OIL INDIA LIMITED</h1>
+        <span>eRTMAC — NWIS Platform</span>
+      </div>
+    </a>
+
+    <nav class="portal-nav">
+      <a href="/landing.html" class="portal-nav-btn">🏛️ Home</a>
+      <a href="/sentinel.html" class="portal-nav-btn">🛡️ Sentinel AI</a>
+      <a href="/geocore.html" class="portal-nav-btn active">💎 GeoCore</a>
+      <a href="/chronos.html" class="portal-nav-btn">⏱️ Chronos Replay</a>
+      <a href="/radar.html" class="portal-nav-btn">🛰️ Offset Radar</a>
+      <a href="/stratigraphy.html" class="portal-nav-btn">🌋 3D Strata</a>
+      <a href="/lookahead.html" class="portal-nav-btn">⚡ Look-Ahead</a>
+      <a href="/documents.html" class="portal-nav-btn">📄 Document AI</a>
+      <a href="/copilot.html" class="portal-nav-btn">🤖 AI Copilot</a>
+      <a href="/backtest.html" class="portal-nav-btn">📊 Back-Test</a>
+    </nav>
+
+    <div class="portal-header-right">
+      <div class="well-select-wrap">
+        <span>ACTIVE RIG:</span>
+        <select class="well-select" id="well-selector" onchange="onWellChange()">
+          <option value="NO-15/9-F-12" selected>RIG-OIL-09 (15/9-F-12)</option>
+          <option value="NO-15/9-F-14">RIG-OIL-14 (15/9-F-14)</option>
+          <option value="NO-15/9-F-15S">RIG-OIL-15 (15/9-F-15S)</option>
+          <option value="NO-15/9-F-4">RIG-OIL-04 (15/9-F-4)</option>
+          <option value="NO-15/9-F-1">RIG-OIL-01 (15/9-F-1)</option>
+        </select>
+      </div>
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span>WITSML 1 Hz</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Hero Bar with Geological Controls -->
+  <div class="page-hero-bar">
+    <div class="page-title-group">
+      <h2><span style="color:var(--copper-light);">💎</span> NWIS GeoCore — Advanced Geological Intelligence</h2>
+      <p>Formation-aware depth correlation, explainable analogue selection, and evidence-grounded incident analysis across the Volve Field.</p>
+    </div>
+    <div class="page-hero-actions">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:0.8rem; color:var(--text-muted); font-family:var(--font-mono);">TARGET STRATA:</span>
+        <select class="well-select" id="target-formation-select" onchange="onTargetFormationChange()">
+          <option value="Hugin FM" selected>Hugin FM (Sandstone)</option>
+          <option value="Skagerrak FM">Skagerrak FM (Sandstone)</option>
+          <option value="Heather FM">Heather FM (Shale)</option>
+          <option value="Chalk GP">Chalk GP (Limestone)</option>
+          <option value="Utsira FM">Utsira FM (Shallow Sand)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runSimilarityScan()">⚡ Recalculate GeoCore</button>
+    </div>
+  </div>
+
+  <!-- Connected View Switcher Tabs -->
+  <nav class="geocore-tabs" role="tablist">
+    <button class="geocore-tab-btn active" onclick="switchView('overview')">📋 View A: Geological Overview</button>
+    <button class="geocore-tab-btn" onclick="switchView('map')">🛰️ View B: Interactive Radar Map</button>
+    <button class="geocore-tab-btn" onclick="switchView('correlation')">🌋 View C: Formation Correlation</button>
+    <button class="geocore-tab-btn" onclick="switchView('fingerprint')">🧬 View D: Geological Fingerprint</button>
+    <button class="geocore-tab-btn" onclick="switchView('comparison')">⚖️ View E: Why This Well, Not That Well?</button>
+    <button class="geocore-tab-btn" onclick="switchView('corridor')">🌐 View F: Subsurface Corridor</button>
+    <button class="geocore-tab-btn" onclick="switchView('review')">✍️ View G: Specialist Review</button>
+  </nav>
+
+  <!-- =========================================================================
+       VIEW A: GEOLOGICAL OVERVIEW
+       ========================================================================= -->
+  <section class="geocore-view active" id="view-overview">
+    <div class="telemetry-strip" style="margin-bottom:20px;">
+      <div class="telem-box">
+        <span class="telem-label">PRIMARY WELLBORE</span>
+        <span class="telem-val cyan" id="overview-well-name">NO-15/9-F-12</span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">KELLY BUSHING (KB)</span>
+        <span class="telem-val" id="overview-kb-elevation">43.5 m (Verified RKB)</span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">ACTIVE FORMATION</span>
+        <span class="telem-val amber" id="overview-active-formation">Hugin FM (2850m TVDSS)</span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">SURVEY COVERAGE</span>
+        <span class="telem-val green" id="overview-survey-count">10 Definitive Stations</span>
+      </div>
+      <div class="telem-box">
+        <span class="telem-label">TOTAL OFFSET CANDIDATES</span>
+        <span class="telem-val" id="overview-offset-count">4 Evaluated</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:24px;">
+      <div class="card">
+        <div class="card-header">
+          <h3>Top Ranked Offset Analogues (Multi-Factor Congruence)</h3>
+          <span class="tag tag-amber">EXPLAINABLE RANKING</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+            Ranked by multi-attribute geological compatibility, stratigraphic overlap, directional trajectory deviation, and verified incident records.
+          </p>
+          <div id="overview-analogues-list" style="display:flex; flex-direction:column; gap:10px;">
+            <!-- Populated via JS -->
+            <div style="color:var(--text-muted); font-size:0.9rem;">Loading GeoCore offset rankings...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Stratigraphic Succession Summary</h3>
+          <span class="tag tag-cyan">COMPOSITE LOG PICKS</span>
+        </div>
+        <div class="card-body">
+          <div id="overview-formations-table" style="max-height:360px; overflow-y:auto;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW B: INTERACTIVE RADAR MAP
+       ========================================================================= -->
+  <section class="geocore-view" id="view-map">
+    <div style="display:grid; grid-template-columns: 360px 1fr; gap:24px; height: calc(100vh - 260px); min-height:550px;">
+      <div style="display:flex; flex-direction:column; gap:16px; overflow-y:auto;">
+        <div class="card">
+          <div class="card-header">
+            <h3>Geospatial Candidate Filter</h3>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:6px;">SEARCH RADIUS: <span id="radius-val" style="color:var(--copper-light); font-weight:700;">5.0 km</span></label>
+              <input type="range" min="1" max="15" step="0.5" value="5.0" id="radius-slider" style="width:100%; accent-color:var(--copper-primary);" oninput="updateRadius(this.value)">
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+              Offset candidates within the radial scan corridor are evaluated across 3D subsurface trajectory separation, not surface coordinates alone.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Wellbore Proximity List</h3>
+          </div>
+          <div class="card-body" id="map-well-list" style="display:flex; flex-direction:column; gap:8px;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <div style="border-radius:10px; overflow:hidden; border:1px solid var(--border-accent); position:relative;">
+        <div id="geocore-map" style="width:100%; height:100%;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW C: FORMATION CORRELATION
+       ========================================================================= -->
+  <section class="geocore-view" id="view-correlation">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <h3>Formation-Aware Depth Correlation Track (Active vs. Historical Offset)</h3>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">COMPARE WITH OFFSET:</span>
+          <select class="well-select" id="correlation-offset-select" onchange="runFormationCorrelation()">
+            <option value="NO-15/9-F-14" selected>NO-15/9-F-14 (Severe Mud Loss Analogue)</option>
+            <option value="NO-15/9-F-15S">NO-15/9-F-15S (Packoff / Stuck Pipe Analogue)</option>
+            <option value="NO-15/9-F-4">NO-15/9-F-4 (Tight Hole Analogue)</option>
+            <option value="NO-15/9-F-1">NO-15/9-F-1 (Exploration Pioneer)</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="correlation-result-box" style="margin-bottom:20px; padding:16px; background:rgba(205,133,63,0.06); border:1px solid var(--border-accent); border-radius:8px;">
+          <!-- Correlation stats -->
+        </div>
+
+        <h4 style="font-size:0.95rem; margin-bottom:12px; color:var(--copper-light);">Pinned Historical Events in Correlated Geological Interval</h4>
+        <div id="correlation-events-table">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW D: GEOLOGICAL FINGERPRINT
+       ========================================================================= -->
+  <section class="geocore-view" id="view-fingerprint">
+    <div class="card">
+      <div class="card-header">
+        <h3>Structured Geological & Operational Fingerprint</h3>
+        <span class="tag tag-amber" id="fp-completeness-badge">COMPLETENESS: 85%</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+          Every wellbore interval receives an inspectable fingerprint categorized into 
+          <strong style="color:var(--green-safe);">VERIFIED</strong>, 
+          <strong style="color:var(--copper-primary);">DERIVED</strong>, 
+          <strong style="color:var(--red-hazard);">MISSING</strong>, and 
+          <strong style="color:var(--gold-accent);">UNCERTAIN</strong> attributes. No synthetic approximations are permitted.
+        </p>
+
+        <h4 style="margin-top:20px; font-size:0.9rem; color:var(--green-safe);">✓ Verified Ground-Truth Features</h4>
+        <div class="fp-badge-grid" id="fp-verified-grid"></div>
+
+        <h4 style="margin-top:24px; font-size:0.9rem; color:var(--copper-primary);">⚡ Deterministically Derived Features</h4>
+        <div class="fp-badge-grid" id="fp-derived-grid"></div>
+
+        <h4 style="margin-top:24px; font-size:0.9rem; color:var(--red-hazard);">⚠ Missing Features (Explicitly Penalized)</h4>
+        <div class="fp-badge-grid" id="fp-missing-grid"></div>
+
+        <h4 style="margin-top:24px; font-size:0.9rem; color:var(--gold-accent);">❓ Uncertain Interpretations</h4>
+        <div class="fp-badge-grid" id="fp-uncertain-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW E: WHY THIS WELL, NOT THAT WELL?
+       ========================================================================= -->
+  <section class="geocore-view" id="view-comparison">
+    <div class="card">
+      <div class="card-header">
+        <h3>Signature Innovation 04: "Why This Well, Not That Well?"</h3>
+        <span class="tag tag-amber">COMPARATIVE EXPLANATION</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+          Select two candidate offset wells to inspect why the system preferred one over the other, contrasting full geological congruence against a naive distance-only baseline.
+        </p>
+
+        <div style="display:flex; gap:16px; margin:16px 0; align-items:center;">
+          <div>
+            <label style="font-size:0.78rem; color:var(--text-muted);">WELL A (CANDIDATE 1):</label>
+            <select class="well-select" id="comp-well-a" onchange="runComparison()">
+              <option value="NO-15/9-F-14" selected>NO-15/9-F-14 (1.2 km away)</option>
+              <option value="NO-15/9-F-15S">NO-15/9-F-15S (2.4 km away)</option>
+              <option value="NO-15/9-F-4">NO-15/9-F-4 (4.8 km away)</option>
+              <option value="NO-15/9-F-1">NO-15/9-F-1 (0.28 km away - Pioneer)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.78rem; color:var(--text-muted);">WELL B (CANDIDATE 2):</label>
+            <select class="well-select" id="comp-well-b" onchange="runComparison()">
+              <option value="NO-15/9-F-1" selected>NO-15/9-F-1 (0.28 km away - Closest)</option>
+              <option value="NO-15/9-F-14">NO-15/9-F-14 (1.2 km away)</option>
+              <option value="NO-15/9-F-15S">NO-15/9-F-15S (2.4 km away)</option>
+              <option value="NO-15/9-F-4">NO-15/9-F-4 (4.8 km away)</option>
+            </select>
+          </div>
+          <button class="btn btn-amber" onclick="runComparison()" style="margin-top:16px;">Compare Head-to-Head</button>
+        </div>
+
+        <div id="comparison-verdict-banner" style="padding:16px; border-radius:8px; background:rgba(205,133,63,0.1); border:1px solid var(--border-accent); margin-bottom:20px; font-size:0.9rem; line-height:1.6;">
+          <!-- Verdict -->
+        </div>
+
+        <div class="comparison-grid" id="comparison-columns">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW F: SUBSURFACE CORRIDOR
+       ========================================================================= -->
+  <section class="geocore-view" id="view-corridor">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <h3>3D Trajectory Proximity Corridor & Pinned Incident Markers</h3>
+        <span class="tag tag-amber">MINIMUM CURVATURE GEOMETRY</span>
+      </div>
+      <div class="card-body">
+        <div style="background:rgba(224, 80, 64, 0.08); border:1px solid rgba(224,80,64,0.3); border-radius:6px; padding:12px 16px; margin-bottom:16px; font-size:0.8rem; color:var(--text-main);">
+          🛡️ <strong>ENGINEERING & SAFETY ADVISORY:</strong> The GeoCore Subsurface Corridor is an informational geological correlation and proximity screening tool. It does NOT replace certified directional drilling anti-collision analysis (ISCWSA standards).
+        </div>
+
+        <div class="corridor-canvas-wrap">
+          <img src="/assets/images/subsurface-strata-3d.png" alt="3D Subsurface Corridor" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px;">
+        </div>
+
+        <h4 style="margin-top:20px; font-size:0.9rem; color:var(--copper-light);">3D Trajectory Separation Summary</h4>
+        <div id="corridor-table-wrap" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW G: SPECIALIST REVIEW & AUDIT
+       ========================================================================= -->
+  <section class="geocore-view" id="view-review">
+    <div style="display:grid; grid-template-columns: 1fr 1.2fr; gap:24px;">
+      <div class="card">
+        <div class="card-header">
+          <h3>Record Geological Specialist Review</h3>
+          <span class="tag tag-cyan">HUMAN-IN-THE-LOOP</span>
+        </div>
+        <div class="card-body">
+          <form id="review-form" onsubmit="submitSpecialistReview(event)">
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">CORRELATION IDENTIFIER:</label>
+              <input type="text" id="review-corr-id" value="CORR-HUGIN-F12-F14" class="well-select" style="width:100%;">
+            </div>
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">SPECIALIST NAME:</label>
+              <input type="text" id="review-name" value="DR_ANANYA_SHARMA_OIL" class="well-select" style="width:100%;">
+            </div>
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">ENGINEERING ROLE:</label>
+              <select id="review-role" class="well-select" style="width:100%;">
+                <option value="PRINCIPAL_PETROLEUM_GEOLOGIST" selected>Principal Petroleum Geologist</option>
+                <option value="SENIOR_DRILLING_SUPERINTENDENT">Senior Drilling Superintendent</option>
+                <option value="RESERVOIR_GEOSCIENTIST">Reservoir Geoscientist</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">DECISION:</label>
+              <select id="review-decision" class="well-select" style="width:100%;">
+                <option value="APPROVED" selected>✓ APPROVED (Verified Match)</option>
+                <option value="REJECTED">✕ REJECTED (Incompatible Formation/Datum)</option>
+                <option value="UNCERTAIN">⚠ FLAG UNCERTAIN (Seismic Discontinuity)</option>
+                <option value="MODIFIED">⟲ MODIFIED (Depth Shift Adjusted)</option>
+              </select>
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">SPECIALIST REMARKS & JUSTIFICATION:</label>
+              <textarea id="review-notes" rows="4" class="well-select" style="width:100%; font-family:var(--font-sans);" placeholder="Enter engineering justification for approval or rejection...">Verified Hugin Sandstone top match at 2850m TVDSS and confirmed 42 m³ lost circulation correlation.</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Sign & Commit to Immutable Audit Log</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Cryptographic Audit Chain (SHA-256 HMAC)</h3>
+          <span class="tag tag-green">TAMPER-EVIDENT</span>
+        </div>
+        <div class="card-body">
+          <div id="review-audit-history" style="display:flex; flex-direction:column; gap:12px; max-height:450px; overflow-y:auto;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       EVIDENCE PASSPORT MODAL (PHASE 2 INTEGRATION)
+       ========================================================================= -->
+  <div class="evidence-modal-overlay" id="evidence-modal">
+    <div class="evidence-modal">
+      <button class="modal-close-btn" onclick="closeEvidenceModal()">&times;</button>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <span class="tag tag-amber" id="modal-event-type">LOST_CIRCULATION</span>
+        <span class="tag tag-green" id="modal-status">VERIFIED PROVENANCE</span>
+      </div>
+      <h3 id="modal-event-title" style="margin-bottom:10px; font-size:1.1rem; color:var(--copper-light);">Historical Event Detail</h3>
+      <div id="modal-narrative" style="padding:14px; background:rgba(0,0,0,0.3); border-radius:6px; font-size:0.88rem; line-height:1.6; margin-bottom:16px; border:1px solid var(--border-subtle);"></div>
+      <div id="modal-mitigation" style="padding:12px; background:rgba(61, 184, 104, 0.08); border-left:3px solid var(--green-safe); border-radius:4px; font-size:0.85rem; margin-bottom:16px;"></div>
+      <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); line-height:1.6;">
+        <div><strong>WELLBORE:</strong> <span id="modal-well"></span></div>
+        <div><strong>SOURCE CITATION:</strong> <span id="modal-citation" style="color:var(--copper-bright);"></span></div>
+        <div><strong>DOCUMENT ID:</strong> <span id="modal-doc-id"></span></div>
+      </div>
+      <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-secondary" onclick="closeEvidenceModal()">Close</button>
+        <a href="/documents.html" class="btn btn-primary" target="_blank">Open Full Document AI →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/js/geocore.js"></script>
+</body>
+</html>

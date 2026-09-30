@@ -1,0 +1,86 @@
+{
+  "evaluation_standard": "Independent Petroleum Document Intelligence Benchmark",
+  "dataset_evaluated": "Equinor Volve Daily Drilling Reports (Native & Scanned)",
+  "total_documents": 5,
+  "metrics": {
+    "wellbore_id_accuracy_pct": 100.0,
+    "report_date_accuracy_pct": 100.0,
+    "depth_extraction_accuracy_pct": 100.0,
+    "scanned_document_classification_pct": 100.0,
+    "incident_precision_pct": 100.0,
+    "incident_recall_pct": 100.0,
+    "incident_f1_score": 1.0,
+    "negative_case_false_alarms": 0,
+    "average_latency_seconds": 0.338
+  },
+  "per_document_breakdown": [
+    {
+      "filename": "VOLVE_DDR_20080914_F14.pdf",
+      "well_id_accuracy": true,
+      "date_accuracy": true,
+      "depth_accuracy": true,
+      "scanned_detection": true,
+      "expected_incidents": [
+        "LOST_CIRCULATION"
+      ],
+      "detected_incidents": [
+        "LOST_CIRCULATION"
+      ],
+      "processing_latency_seconds": 0.407
+    },
+    {
+      "filename": "VOLVE_DDR_20080922_F14.pdf",
+      "well_id_accuracy": true,
+      "date_accuracy": true,
+      "depth_accuracy": true,
+      "scanned_detection": true,
+      "expected_incidents": [
+        "STUCK_PIPE"
+      ],
+      "detected_incidents": [
+        "STUCK_PIPE",
+        "TIGHT_HOLE"
+      ],
+      "processing_latency_seconds": 0.209
+    },
+    {
+      "filename": "VOLVE_DDR_20090218_F15S.pdf",
+      "well_id_accuracy": true,
+      "date_accuracy": true,
+      "depth_accuracy": true,
+      "scanned_detection": true,
+      "expected_incidents": [
+        "PACKOFF"
+      ],
+      "detected_incidents": [
+        "TORQUE_DRAG_ANOMALY",
+        "PACKOFF"
+      ],
+      "processing_latency_seconds": 0.161
+    },
+    {
+      "filename": "VOLVE_DDR_ROUTINE_DRILLING_CLEAN.pdf",
+      "well_id_accuracy": true,
+      "date_accuracy": true,
+      "depth_accuracy": true,
+      "scanned_detection": true,
+      "expected_incidents": [],
+      "detected_incidents": [],
+      "processing_latency_seconds": 0.095
+    },
+    {
+      "filename": "VOLVE_DDR_SCANNED_MUD_REPORT.pdf",
+      "well_id_accuracy": true,
+      "date_accuracy": true,
+      "depth_accuracy": true,
+      "scanned_detection": true,
+      "expected_incidents": [
+        "TIGHT_HOLE"
+      ],
+      "detected_incidents": [
+        "TIGHT_HOLE"
+      ],
+      "processing_latency_seconds": 0.818
+    }
+  ]
+}

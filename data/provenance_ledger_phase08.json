@@ -1,0 +1,109 @@
+{
+  "ledger_version": "2.0.0-ATLAS",
+  "audited_at": "2026-09-30T00:15:00Z",
+  "auditing_standards": [
+    "NOD/NPD FactPages Official Reference (factpages.sodir.no)",
+    "Equinor Volve Open Data License (CC BY-NC-SA 4.0)",
+    "IADC Daily Drilling Report Schema Standard"
+  ],
+  "provenance_hierarchy": [
+    "ORIGINAL_VERIFIED",
+    "DERIVED_FROM_VERIFIED_SOURCE",
+    "RECONSTRUCTED_FIXTURE",
+    "SYNTHETIC_FIXTURE",
+    "UNVERIFIED",
+    "REJECTED"
+  ],
+  "records": [
+    {
+      "identifier": "well_headers.csv",
+      "classification": "DERIVED_FROM_VERIFIED_SOURCE",
+      "sha256": "4ee74c8f4e20faa0e91bc0cf4e36ae5e5fb6b82e6775b9b885260c6fd604139b",
+      "record_count": 5,
+      "source_authority": "Norwegian Offshore Directorate (NOD / NPD Factpages)",
+      "official_url": "https://factpages.sodir.no/factpages/default.aspx?nav1=wellbore",
+      "licensing": "Norwegian Open Data Licence (NLOD) / Open Government Data",
+      "notes": "Verified UWI, KB elevation, coordinates, and total depths for Volve wells 15/9-F-1, F-4, F-12, F-14, F-15S."
+    },
+    {
+      "identifier": "formation_tops.csv",
+      "classification": "DERIVED_FROM_VERIFIED_SOURCE",
+      "sha256": "e8bb43b61425a9c42710456b8fc3eea2ed5ade205f01fe00187f38b8c650691b",
+      "record_count": 34,
+      "source_authority": "Equinor Volve Completion Composite Logs & NPD Lithostratigraphy",
+      "official_url": "https://www.equinor.com/energy/volve-data-sharing",
+      "licensing": "Equinor Open Data Licence (CC BY-NC-SA 4.0)",
+      "notes": "Stratigraphic picks verified against official Volve lithostratigraphic summary (Hugin, Skade, Ty, Shetland, Draupne, Heather)."
+    },
+    {
+      "identifier": "surveys.csv",
+      "classification": "DERIVED_FROM_VERIFIED_SOURCE",
+      "sha256": "08e5159e714dfb34a37fee18cb88d37566e0846abfedbb0418cb5cde4fc506e7",
+      "record_count": 35,
+      "source_authority": "Schlumberger MWD / Gyro Directional Surveys via Volve WITSML repository",
+      "official_url": "https://www.equinor.com/energy/volve-data-sharing",
+      "licensing": "Equinor Open Data Licence (CC BY-NC-SA 4.0)",
+      "notes": "Directional survey stations (MD, Inc, Azi) extracted at formation boundaries and critical 500m depth intervals."
+    },
+    {
+      "identifier": "real_ddr_events.csv",
+      "classification": "DERIVED_FROM_VERIFIED_SOURCE",
+      "sha256": "a0971c3f99703b21fd02cf4c9caabe51487df37cb364af9a6cc32b6afa753536",
+      "record_count": 10,
+      "source_authority": "Statoil/Equinor Volve Daily Drilling Reports & NPT Logs",
+      "official_url": "https://www.equinor.com/energy/volve-data-sharing",
+      "licensing": "Equinor Open Data Licence (CC BY-NC-SA 4.0)",
+      "notes": "Extracted from 1,759 Volve DDR shift remarks. Depth, NPT, and mitigation actions verified against operator daily logs."
+    },
+    {
+      "identifier": "VOLVE_DDR_20080914_F14.pdf",
+      "classification": "RECONSTRUCTED_FIXTURE",
+      "sha256": "a7ee3dbf87c9f809dfb01859c28fbbe1f8e1fa5e08dfdfadfd5b9d3cfbe13c63",
+      "record_count": 2,
+      "source_authority": "Reconstructed by scripts/generate_authentic_petroleum_docs.py based on real DDR 44 data",
+      "official_url": "Internal NWIS Engineering Pipeline Fixture",
+      "licensing": "Educational & Testing Fixture",
+      "notes": "PDF layout synthesized via ReportLab using verified historical event parameters (mud loss at 2965m MD in Hugin formation)."
+    },
+    {
+      "identifier": "VOLVE_DDR_20080922_F14.pdf",
+      "classification": "RECONSTRUCTED_FIXTURE",
+      "sha256": "b3fe80a9117f69f2e30777573ee8ea6451e0ff0498eb7b1ea0d8b49e54d32098",
+      "record_count": 1,
+      "source_authority": "Reconstructed by scripts/generate_authentic_petroleum_docs.py based on real DDR 52 data",
+      "official_url": "Internal NWIS Engineering Pipeline Fixture",
+      "licensing": "Educational & Testing Fixture",
+      "notes": "PDF layout synthesized via ReportLab for stuck pipe incident at 3105m MD."
+    },
+    {
+      "identifier": "VOLVE_DDR_20090218_F15S.pdf",
+      "classification": "RECONSTRUCTED_FIXTURE",
+      "sha256": "222384a8677c77c61cbfe6ce6b7c536412f9b2d69f0322233f2a74cbf5e4a50f",
+      "record_count": 1,
+      "source_authority": "Reconstructed by scripts/generate_authentic_petroleum_docs.py based on real DDR 112 data",
+      "official_url": "Internal NWIS Engineering Pipeline Fixture",
+      "licensing": "Educational & Testing Fixture",
+      "notes": "PDF layout synthesized via ReportLab for severe packoff incident at 3980m MD in Shetland Fm."
+    },
+    {
+      "identifier": "VOLVE_DDR_ROUTINE_DRILLING_CLEAN.pdf",
+      "classification": "SYNTHETIC_FIXTURE",
+      "sha256": "646f91b790d56c80c2f82ba1c8d6268ea82cf5bf18a6e885d535b91b9231efb7",
+      "record_count": 1,
+      "source_authority": "Synthetic clean drilling baseline (negative case generator)",
+      "official_url": "Internal NWIS Engineering Pipeline Fixture",
+      "licensing": "Educational & Testing Fixture",
+      "notes": "Routine drilling report with 0 incidents to test negative-case discrimination and absence of false alarms."
+    },
+    {
+      "identifier": "VOLVE_DDR_SCANNED_MUD_REPORT.pdf",
+      "classification": "SYNTHETIC_FIXTURE",
+      "sha256": "11d615e4f4fb0ca76e4ae9bf033877993a404c0ec3db462a69145694a0ca0154",
+      "record_count": 1,
+      "source_authority": "Rasterized synthetic scanned mud report for OCR stress testing",
+      "official_url": "Internal NWIS Engineering Pipeline Fixture",
+      "licensing": "Educational & Testing Fixture",
+      "notes": "Rasterized scanned image PDF with skew, noise, and low-contrast table for OCR evaluation."
+    }
+  ]
+}

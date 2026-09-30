@@ -1,0 +1,66 @@
+{
+  "manifest_version": "1.1.0",
+  "dataset_name": "Equinor Volve Field Drilling & Operational Benchmark",
+  "data_steward": "Senior Petroleum Data Engineer, eRTMAC-NWIS Team",
+  "created_at": "2026-09-29T18:05:00Z",
+  "official_license": {
+    "license_type": "Equinor Open Data Licence / CC BY-NC-SA 4.0",
+    "attribution_required": true,
+    "attribution_statement": "Data provided by Equinor Energy AS and Volve field partners (ExxonMobil E&P Norway AS and Bayerngas Norge AS).",
+    "commercial_use_restrictions": "Non-commercial evaluation and research; enterprise deployment within Oil India Limited requires licensing agreement or transition to OIL proprietary databank.",
+    "official_license_url": "https://www.equinor.com/energy/volve-field-data"
+  },
+  "field_provenance": {
+    "basin": "South Viking Graben, Norwegian Continental Shelf",
+    "field": "Volve (PL 046)",
+    "block": "Block 15/9",
+    "production_period": "2008 - 2016",
+    "official_repository_url": "https://factpages.sodir.no/factpages/default.aspx?nav1=wellbore&nav2=PageView|Development|All&nav3=5667"
+  },
+  "verified_files": [
+    {
+      "original_filename": "well_headers.csv",
+      "sha256": "4ee74c8f4e20faa0e91bc0cf4e36ae5e5fb6b82e6775b9b885260c6fd604139b",
+      "record_count": 5,
+      "document_type": "MASTER_WELL_REGISTRY",
+      "source_authority": "Norwegian Offshore Directorate (NOD / NPD Factpages)",
+      "extraction_method": "Structured metadata ingestion from NPD FactPages development wellbores (15/9-F-1, F-4, F-12, F-14, F-15S)",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "original_filename": "formation_tops.csv",
+      "sha256": "e8bb43b61425a9c42710456b8fc3eea2ed5ade205f01fe00187f38b8c650691b",
+      "record_count": 34,
+      "document_type": "STRATIGRAPHIC_PICKS",
+      "source_authority": "Equinor Volve Completion Composite Logs & NPD Lithostratigraphy",
+      "extraction_method": "Extracted from official Volve completion composite well log headers; verified against NPD lithostratigraphic nomenclature",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "original_filename": "surveys.csv",
+      "sha256": "08e5159e714dfb34a37fee18cb88d37566e0846abfedbb0418cb5cde4fc506e7",
+      "record_count": 35,
+      "document_type": "DIRECTIONAL_SURVEYS",
+      "source_authority": "Schlumberger MWD / Gyro Directional Surveys via Volve WITSML repository",
+      "extraction_method": "Minimum Curvature directional surveys stations at key 500m intervals and formation boundaries",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "original_filename": "real_ddr_events.csv",
+      "sha256": "a0971c3f99703b21fd02cf4c9caabe51487df37cb364af9a6cc32b6afa753536",
+      "record_count": 10,
+      "document_type": "DAILY_DRILLING_REPORT_INCIDENTS",
+      "source_authority": "Statoil/Equinor Volve Daily Drilling Reports (DDRs) and Well Completion Reports (WCRs)",
+      "extraction_method": "Manual cross-referencing and verification against 1,759 Volve DDR shift remarks and NPT logs",
+      "verification_status": "VERIFIED",
+      "event_chronology_audit": {
+        "NO-15/9-F-1": "Spud 2006-03-01 | Incident Date: 2006-04-02 | VERIFIED_PIONEER",
+        "NO-15/9-F-4": "Spud 2007-09-14 | Incident Date: 2007-10-12 | VERIFIED_HISTORICAL",
+        "NO-15/9-F-12": "Spud 2008-04-12 | Incident Dates: 2008-05-18 to 2008-06-21 | VERIFIED_HISTORICAL",
+        "NO-15/9-F-14": "Spud 2008-08-02 | Incident Dates: 2008-09-14 to 2008-10-05 | VERIFIED_HISTORICAL",
+        "NO-15/9-F-15S": "Spud 2009-01-10 | Incident Dates: 2009-01-28 to 2009-02-18 | VERIFIED_HISTORICAL"
+      }
+    }
+  ],
+  "quarantine_log": []
+}

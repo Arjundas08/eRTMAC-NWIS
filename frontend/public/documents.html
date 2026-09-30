@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Intelligence & Evidence Passports | eRTMAC-NWIS</title>
+  <meta name="description" content="Industrial document OCR, layout extraction, and 8-question Evidence Passports for Oil India Limited drilling records.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/portal.css">
+  <style>
+    .doc-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .upload-zone {
+      border: 2px dashed rgba(8, 127, 140, 0.4);
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      background: rgba(8, 127, 140, 0.05);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-bottom: 20px;
+    }
+    .upload-zone:hover {
+      border-color: var(--teal-light);
+      background: rgba(8, 127, 140, 0.1);
+    }
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+    .doc-table th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      font-weight: 700;
+    }
+    .doc-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .passport-box {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .q-tile {
+      background: rgba(13, 11, 9, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+    .q-tile-num {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--amber-accent);
+      font-family: var(--font-mono);
+      margin-bottom: 4px;
+    }
+    .q-tile-val {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Executive Navigation Bar -->
+  <header class="portal-header">
+    <a href="/landing.html" class="portal-brand">
+      <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited">
+      <div class="portal-brand-text">
+        <h1>OIL INDIA LIMITED</h1>
+        <span>eRTMAC — NWIS Platform</span>
+      </div>
+    </a>
+
+    <nav class="portal-nav">
+      <a href="/landing.html" class="portal-nav-btn">🏛️ Home</a>
+      <a href="/sentinel.html" class="portal-nav-btn">🛡️ Sentinel AI</a>
+      <a href="/geocore.html" class="portal-nav-btn">💎 GeoCore</a>
+      <a href="/radar.html" class="portal-nav-btn">🛰️ Offset Radar</a>
+      <a href="/stratigraphy.html" class="portal-nav-btn">🌋 3D Strata</a>
+      <a href="/chronos.html" class="portal-nav-btn">⏱️ Chronos Replay</a>
+      <a href="/lookahead.html" class="portal-nav-btn">⚡ Look-Ahead</a>
+      <a href="/documents.html" class="portal-nav-btn active">📄 Document AI</a>
+      <a href="/copilot.html" class="portal-nav-btn">🤖 AI Copilot</a>
+      <a href="/backtest.html" class="portal-nav-btn">📊 Back-Test</a>
+    </nav>
+
+    <div class="portal-header-right">
+      <div class="well-select-wrap">
+        <span>ACTIVE RIG:</span>
+        <select class="well-select">
+          <option value="NO-15/9-F-12" selected>RIG-OIL-09 (F-12)</option>
+        </select>
+      </div>
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span>WITSML 1 Hz</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Hero Bar -->
+  <div class="page-hero-bar">
+    <div class="page-title-group">
+      <h2><span style="color:var(--teal-light);">📄</span> Document Intelligence & Evidence Passports</h2>
+      <p>Automated OCR, tabular parsing of DDRs/WCRs, and 8-question Evidence Passports verified with cryptographic SHA-256 signatures.</p>
+    </div>
+    <div class="page-hero-actions">
+      <a href="/lookahead.html" class="btn btn-secondary">← Back to Look-Ahead</a>
+      <a href="/copilot.html" class="btn btn-primary">Query in Copilot →</a>
+    </div>
+  </div>
+
+  <!-- Main Content Workspace -->
+  <main class="portal-content">
+    
+    <div class="doc-grid">
+      
+      <!-- Left Column: Ingestion & Document Registry -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Historical Drilling Document Ingestion</h3>
+          <span class="tag tag-cyan">PyMuPDF + OCR</span>
+        </div>
+        <div class="card-body">
+          
+          <div class="upload-zone" onclick="document.getElementById('pdf-input').click()">
+            <input type="file" id="pdf-input" accept=".pdf" style="display:none;" onchange="handleFileUpload(this)">
+            <div style="font-size:2rem; margin-bottom:8px;">📄</div>
+            <div style="font-weight:700; color:var(--text-main); font-size:0.95rem;">Upload Daily Drilling Report (DDR / WCR)</div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Drag & drop native or scanned PDF (Max: 50MB)</div>
+          </div>
+
+          <h4 style="font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase;">
+            Ingested Master Records (Equinor Volve Field)
+          </h4>
+          
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>DOCUMENT NAME</th>
+                <th>WELL</th>
+                <th>TYPE</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:#F8FAFC;">volve_ddr_f14_20080412.pdf</td>
+                <td>NO-15/9-F-14</td>
+                <td>DDR</td>
+                <td><span class="tag tag-green">VERIFIED</span></td>
+              </tr>
+              <tr>
+                <td style="color:#F8FAFC;">volve_wcr_f15s_20090218.pdf</td>
+                <td>NO-15/9-F-15S</td>
+                <td>WCR</td>
+                <td><span class="tag tag-green">VERIFIED</span></td>
+              </tr>
+              <tr>
+                <td style="color:#F8FAFC;">volve_mudlog_f12_20080802.pdf</td>
+                <td>NO-15/9-F-12</td>
+                <td>MUDLOG</td>
+                <td><span class="tag tag-green">VERIFIED</span></td>
+              </tr>
+              <tr>
+                <td style="color:#F8FAFC;">volve_formation_tops_summary.pdf</td>
+                <td>ALL WELLS</td>
+                <td>GEOLOGY</td>
+                <td><span class="tag tag-cyan">STRUCTURED</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+      <!-- Right Column: 8-Question Evidence Passport Viewer -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Evidence Passport — 8 Engineering Verification Questions</h3>
+          <span class="tag tag-amber">NO-15/9-F-14 (INCIDENT #42)</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:18px;">
+            Every historical incident surfaced by NWIS satisfies 8 rigorous verification standards before being presented to a drilling engineer.
+          </p>
+
+          <div class="passport-box">
+            
+            <div class="q-tile">
+              <div class="q-tile-num">Q1. WHAT HAPPENED?</div>
+              <div class="q-tile-val" style="color:var(--red-hazard);">Severe Lost Circulation (42 m³ OBM)</div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q2. WHICH WELL?</div>
+              <div class="q-tile-val">NO-15/9-F-14 (Equinor Volve Field)</div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q3. WHEN DID IT HAPPEN?</div>
+              <div class="q-tile-val">2008-04-12 14:30 UTC</div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q4. AT WHAT DEPTH?</div>
+              <div class="q-tile-val" style="color:var(--amber-accent);">2865.0 m TVDSS (2965m MD)</div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q5. IN WHICH FORMATION?</div>
+              <div class="q-tile-val" style="color:var(--green-safe);">Skade Sandstone Member (Top: 2855.2m)</div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q6. ORIGINAL DOCUMENT EXCERPT?</div>
+              <div class="q-tile-val" style="font-size:0.75rem; color:#CBD5E1; font-family:var(--font-mono); line-height:1.4;">
+                "Losses increased to 25 bbl/hr upon penetrating Skade top. Spotted 35 ppb CaCO3 pill; full returns restored."
+              </div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q7. WHAT INFORMATION IS MISSING?</div>
+              <div class="q-tile-val" style="color:var(--green-safe);">None (Complete Record Verified)</div>
+            </div>
+
+            <div class="q-tile">
+              <div class="q-tile-num">Q8. HAS RECORD BEEN VERIFIED?</div>
+              <div class="q-tile-val" style="color:var(--green-safe);">
+                ✓ Human Verified by Drilling Specialist
+              </div>
+            </div>
+
+          </div>
+
+          <div style="margin-top:20px; padding:12px; background:rgba(255,255,255,0.03); border-radius:6px; font-size:0.75rem; font-family:var(--font-mono); color:var(--text-muted); display:flex; justify-content:space-between;">
+            <span>SHA-256 AUDIT HASH: 8a7f4e912b3c...9fa2d2c3</span>
+            <span style="color:var(--teal-light);">ORIGIN: NOD FACTPAGES BENCHMARK</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="portal-footer">
+    <div><strong>OIL INDIA LIMITED</strong> — eRTMAC Nearby Wells Intelligence System</div>
+    <div>Strict Zero-Hallucination Evidence Contract Active | WITSML v1.4.1.1</div>
+  </footer>
+
+  <script>
+    function handleFileUpload(input) {
+      if (input.files && input.files[0]) {
+        alert('Document received: ' + input.files[0].name + '. Ingestion and OCR processing pipeline initiated.');
+      }
+    }
+  </script>
+</body>
+</html>

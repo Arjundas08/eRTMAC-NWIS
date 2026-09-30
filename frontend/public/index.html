@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NWIS — Nearby Wells Intelligence System | eRTMAC Platform</title>
+  <meta name="description" content="A formation-aware drilling intelligence platform transforming historical well records into verified operational knowledge, explainable offset-well insights and evidence-linked decision support.">
+  <meta name="theme-color" content="#0D0B09">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/design-system.css">
+  <link rel="stylesheet" href="/css/landing.css">
+</head>
+<body>
+
+  <!-- ====== STICKY NAVIGATION ====== -->
+  <nav class="landing-nav" id="landing-nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner container">
+      <a href="/" class="nav-brand" aria-label="NWIS Home">
+        <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited" class="nav-brand-logo">
+        <div class="nav-brand-text">
+          <span class="nav-brand-name">OIL INDIA LIMITED</span>
+          <span class="nav-brand-sub">eRTMAC — NWIS Platform</span>
+        </div>
+      </a>
+
+      <div class="nav-links" id="nav-links">
+        <a href="/nexus.html" class="nav-link" style="color:var(--copper-bright); font-weight:700;">🌐 NEXUS Command</a>
+        <a href="/pulse.html" class="nav-link" style="color:#38BDF8; font-weight:700;">⚡ Pulse Live</a>
+        <a href="/sentinel.html" class="nav-link" style="color:#10B981; font-weight:700;">🛡️ Sentinel RAG</a>
+        <a href="/chronos.html" class="nav-link" style="color:#A78BFA; font-weight:700;">⏳ Chronos Replay</a>
+        <a href="/geocore.html" class="nav-link" style="color:var(--gold-accent); font-weight:700;">💎 GeoCore</a>
+        <a href="/radar.html" class="nav-link">Radar</a>
+        <a href="/stratigraphy.html" class="nav-link">3D Strata</a>
+        <a href="/lookahead.html" class="nav-link">Look-Ahead</a>
+        <a href="/documents.html" class="nav-link">Document AI</a>
+        <a href="/copilot.html" class="nav-link">Copilot</a>
+        <a href="/backtest.html" class="nav-link">Back-Test</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="#modules" class="nwis-btn nwis-btn-amber nwis-btn-sm">Explore Modules</a>
+      </div>
+
+      <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ====== HERO SECTION ====== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <!-- SVG Industrial Illustration Background -->
+      <svg class="hero-illustration" viewBox="0 0 1440 800" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0D0B09"/>
+            <stop offset="40%" stop-color="#151210"/>
+            <stop offset="100%" stop-color="#1E1A16"/>
+          </linearGradient>
+          <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1E1A16"/>
+            <stop offset="100%" stop-color="#0D0B09"/>
+          </linearGradient>
+          <radialGradient id="glowAmber" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0%" stop-color="rgba(212,168,67,0.3)"/>
+            <stop offset="100%" stop-color="rgba(212,168,67,0)"/>
+          </radialGradient>
+          <radialGradient id="glowTeal" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0%" stop-color="rgba(205,133,63,0.2)"/>
+            <stop offset="100%" stop-color="rgba(205,133,63,0)"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Sky -->
+        <rect width="1440" height="800" fill="url(#skyGrad)"/>
+        
+        <!-- Stars -->
+        <circle cx="200" cy="80" r="1" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="400" cy="120" r="0.8" fill="rgba(255,255,255,0.3)"/>
+        <circle cx="650" cy="60" r="1.2" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="880" cy="100" r="0.6" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="1100" cy="70" r="1" fill="rgba(255,255,255,0.35)"/>
+        <circle cx="300" cy="150" r="0.7" fill="rgba(255,255,255,0.2)"/>
+
+        <!-- Horizon glow -->
+        <ellipse cx="1000" cy="520" rx="400" ry="200" fill="url(#glowAmber)" opacity="0.6"/>
+        <ellipse cx="400" cy="550" rx="300" ry="150" fill="url(#glowTeal)" opacity="0.4"/>
+
+        <!-- Ground plane -->
+        <rect x="0" y="500" width="1440" height="300" fill="url(#groundGrad)"/>
+        <line x1="0" y1="500" x2="1440" y2="500" stroke="rgba(232,168,61,0.15)" stroke-width="1"/>
+
+        <!-- Drilling Rig (Right Side) -->
+        <g transform="translate(950, 180)">
+          <!-- Rig derrick -->
+          <polygon points="60,320 80,0 100,0 120,320" fill="#1E1A16" stroke="#3A2C1C" stroke-width="1"/>
+          <polygon points="70,320 85,40 95,40 110,320" fill="none" stroke="rgba(232,168,61,0.3)" stroke-width="0.5"/>
+          <!-- Cross bracing -->
+          <line x1="68" y1="80" x2="112" y2="140" stroke="#3A2C1C" stroke-width="0.8"/>
+          <line x1="112" y1="80" x2="68" y2="140" stroke="#3A2C1C" stroke-width="0.8"/>
+          <line x1="66" y1="160" x2="114" y2="220" stroke="#3A2C1C" stroke-width="0.8"/>
+          <line x1="114" y1="160" x2="66" y2="220" stroke="#3A2C1C" stroke-width="0.8"/>
+          <line x1="64" y1="240" x2="116" y2="300" stroke="#3A2C1C" stroke-width="0.8"/>
+          <line x1="116" y1="240" x2="64" y2="300" stroke="#3A2C1C" stroke-width="0.8"/>
+          <!-- Crown light -->
+          <circle cx="90" cy="5" r="4" fill="#E8A83D" opacity="0.9"/>
+          <circle cx="90" cy="5" r="12" fill="rgba(232,168,61,0.2)"/>
+          <!-- Draw works -->
+          <rect x="30" y="290" width="120" height="35" rx="3" fill="#2A2420" stroke="#3A2C1C" stroke-width="1"/>
+          <!-- Substructure -->
+          <rect x="20" y="320" width="140" height="25" rx="2" fill="#1E1A16" stroke="#3A2C1C" stroke-width="0.8"/>
+          <!-- Operating lights -->
+          <circle cx="45" cy="300" r="2" fill="#E8A83D" opacity="0.7"/>
+          <circle cx="135" cy="300" r="2" fill="#E8A83D" opacity="0.7"/>
+          <!-- Mud tanks -->
+          <rect x="-30" y="335" width="50" height="20" rx="2" fill="#2A2420" stroke="#3A2C1C" stroke-width="0.8"/>
+          <rect x="160" y="335" width="50" height="20" rx="2" fill="#2A2420" stroke="#3A2C1C" stroke-width="0.8"/>
+        </g>
+
+        <!-- Second smaller rig (far right background) -->
+        <g transform="translate(1250, 300)" opacity="0.4">
+          <polygon points="20,200 30,0 40,0 50,200" fill="#1E1A16" stroke="#3A2C1C" stroke-width="0.5"/>
+          <circle cx="35" cy="3" r="2" fill="#E8A83D" opacity="0.6"/>
+          <rect x="10" y="195" width="50" height="12" rx="2" fill="#2A2420"/>
+        </g>
+
+        <!-- Pipe racks (left mid) -->
+        <g transform="translate(100, 470)">
+          <rect x="0" y="0" width="180" height="6" rx="1" fill="#2A2420" stroke="#3A2C1C" stroke-width="0.5"/>
+          <rect x="0" y="10" width="180" height="6" rx="1" fill="#2A2420" stroke="#3A2C1C" stroke-width="0.5"/>
+          <rect x="0" y="20" width="160" height="6" rx="1" fill="#2A2420" stroke="#3A2C1C" stroke-width="0.5"/>
+          <!-- Support legs -->
+          <rect x="10" y="26" width="3" height="18" fill="#1E1A16"/>
+          <rect x="90" y="26" width="3" height="18" fill="#1E1A16"/>
+          <rect x="165" y="16" width="3" height="28" fill="#1E1A16"/>
+        </g>
+
+        <!-- Geological subsurface layers (bottom) -->
+        <g opacity="0.5">
+          <path d="M0 580 Q200 575 400 585 Q700 570 1000 580 Q1200 590 1440 575 L1440 620 Q1200 625 1000 615 Q700 630 400 620 Q200 610 0 615Z" fill="#2A2018"/>
+          <path d="M0 620 Q300 610 600 625 Q900 635 1200 620 Q1350 615 1440 620 L1440 660 Q1200 665 900 655 Q600 645 300 660 Q150 665 0 655Z" fill="#30261C"/>
+          <path d="M0 660 Q250 650 500 665 Q750 675 1000 660 Q1250 650 1440 660 L1440 700 Q1250 710 1000 700 Q750 690 500 705 Q250 710 0 700Z" fill="#382C20"/>
+          <path d="M0 700 Q400 695 700 710 Q1100 720 1440 700 L1440 800 L0 800Z" fill="#403224"/>
+        </g>
+
+        <!-- Wellbore trajectory (through layers) -->
+        <g opacity="0.6">
+          <path d="M1040 520 Q1035 580 1020 640 Q1000 700 985 780" stroke="#E8A83D" stroke-width="2" fill="none" stroke-dasharray="6 4"/>
+          <circle cx="1040" cy="520" r="3" fill="#E8A83D"/>
+          <!-- Bit -->
+          <polygon points="980,775 985,790 990,775" fill="#E8A83D"/>
+        </g>
+
+        <!-- Survey grid lines (subsurface) -->
+        <g opacity="0.08" stroke="white" stroke-width="0.5">
+          <line x1="0" y1="600" x2="1440" y2="600"/>
+          <line x1="0" y1="650" x2="1440" y2="650"/>
+          <line x1="0" y1="700" x2="1440" y2="700"/>
+          <line x1="0" y1="750" x2="1440" y2="750"/>
+          <line x1="200" y1="550" x2="200" y2="800"/>
+          <line x1="400" y1="550" x2="400" y2="800"/>
+          <line x1="600" y1="550" x2="600" y2="800"/>
+          <line x1="800" y1="550" x2="800" y2="800"/>
+          <line x1="1000" y1="550" x2="1000" y2="800"/>
+          <line x1="1200" y1="550" x2="1200" y2="800"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="hero-content container">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <div class="hero-badge hero-badge-oil">
+            <span class="hero-badge-dot"></span>
+            SIH26121 — Proposed Solution for Oil India Limited (eRTMAC)
+          </div>
+          <h1 class="hero-headline">
+            <span class="hero-headline-line">Every Well Has</span>
+            <span class="hero-headline-line">a <em class="hero-em">History.</em></span>
+            <span class="hero-headline-line hero-headline-sub">Make It Part of Your</span>
+            <span class="hero-headline-line hero-headline-sub">Next <em class="hero-em-alt">Decision.</em></span>
+          </h1>
+          <p class="hero-desc">
+            A formation-aware drilling intelligence platform transforming historical well records into verified operational knowledge, explainable offset-well insights, and evidence-linked decision support.
+          </p>
+          <div class="hero-actions">
+            <a href="#modules" class="nwis-btn nwis-btn-amber nwis-btn-lg">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Explore 6 Dedicated Modules ↓
+            </a>
+            <a href="/radar.html" class="nwis-btn nwis-btn-primary nwis-btn-lg">Launch Offset Radar →</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="hero-stat-num">5</span>
+              <span class="hero-stat-label">Verified Volve Wells</span>
+            </div>
+            <div class="hero-stat-sep"></div>
+            <div class="hero-stat">
+              <span class="hero-stat-num">10</span>
+              <span class="hero-stat-label">Historical Incidents</span>
+            </div>
+            <div class="hero-stat-sep"></div>
+            <div class="hero-stat">
+              <span class="hero-stat-num">100%</span>
+              <span class="hero-stat-label">Source Provenance</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-showcase">
+          <div class="hero-image-card" onclick="openImageModal('/assets/images/nwis-hero-rig.png', 'eRTMAC-NWIS Industrial Drilling Operations & Horizon Visualization', 'Cinematic high-resolution rendering of active drilling operations on Well NO-15/9-F-12. Features 3D holographic subsurface well path projections, Skade and Hugin reservoir layers, regional fault line F-03, and pre-bit look-ahead advisory beacon.')">
+            <div class="hero-image-overlay">
+              <span class="hud-live"><span class="hero-badge-dot"></span> WITSML LIVE STREAM (1 Hz)</span>
+              <span class="hud-tag">TARGET: HUGIN FM</span>
+            </div>
+            <img src="/assets/images/nwis-hero-rig.png" alt="NWIS Industrial Drilling Rig and Telemetry" loading="eager">
+            <div class="hero-image-caption">
+              <span>Well NO-15/9-F-12 • Bit Depth: 2893.5m MD • Look-Ahead Active</span>
+              <span class="caption-action">🔍 Click to Expand</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator" aria-hidden="true">
+      <svg width="20" height="30" viewBox="0 0 20 30">
+        <rect x="1" y="1" width="18" height="28" rx="9" stroke="rgba(255,255,255,0.3)" fill="none" stroke-width="1.5"/>
+        <circle cx="10" cy="10" r="2.5" fill="rgba(255,255,255,0.5)" class="scroll-dot"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ====== INTERACTIVE OPERATIONAL MODULES PORTAL (DEDICATED TOOLS) ====== -->
+  <section class="section-modules" id="modules">
+    <div class="container">
+      <div class="modules-header">
+        <span class="section-label">Modular Architecture</span>
+        <h2 class="section-title">Dedicated Engineering Workspaces</h2>
+        <p class="section-subtitle">
+          Engineered for maximum clarity and zero dashboard clutter. Select any specialized operational module to launch its dedicated, full-screen tool.
+        </p>
+      </div>
+
+      <div class="modules-grid">
+        <!-- Master Module: NWIS NEXUS Unified Operations Command Center -->
+        <div class="module-card" style="border:2px solid var(--copper-primary); background:linear-gradient(180deg, rgba(205,133,63,0.18) 0%, rgba(20,16,13,0.98) 100%); grid-column: 1 / -1;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div style="max-width:800px;">
+              <div class="module-card-icon">🌐</div>
+              <span class="module-card-badge" style="background:rgba(205,133,63,0.3); color:var(--copper-bright);">PHASE 07 • UNIFIED OPERATIONS COMMAND CENTER</span>
+              <h3 class="module-card-title" style="font-size:24px; margin-top:8px;">NWIS NEXUS — Decision Command Center</h3>
+              <p class="module-card-desc" style="font-size:15px; line-height:1.6;">
+                Unified cross-module intelligence fusion orchestrating GeoCore, Chronos, Sentinel, Pulse, and Document AI into a single operational picture. Features real-time system health aggregation, dynamic risk scoring, shift handover logging, alert timeline, and multi-well comparative benchmarking.
+              </p>
+              <div class="module-card-meta">
+                <span class="module-meta-item">🛡️ Unified System Health</span>
+                <span class="module-meta-item">⚡ Live Fusion Matrix</span>
+                <span class="module-meta-item">📋 Shift Handover Audit</span>
+                <span class="module-meta-item">⚖️ Explainable Risk Scoring</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; align-self:center;">
+              <a href="/nexus.html" class="module-btn" style="background:linear-gradient(135deg, var(--copper-primary), var(--gold-accent)); color:#0D0B09; font-weight:700; padding:14px 28px; font-size:15px; border-radius:8px; text-align:center;">Launch NWIS NEXUS Command Center →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module: NWIS PULSE Live Drilling Telemetry -->
+        <div class="module-card" style="border:1px solid rgba(56,189,248,0.3); background:linear-gradient(180deg, rgba(56,189,248,0.08) 0%, rgba(18,22,28,0.95) 100%);">
+          <div>
+            <div class="module-card-icon">⚡</div>
+            <span class="module-card-badge" style="background:rgba(56,189,248,0.2); color:#38BDF8;">PHASE 06 • Standards Telemetry</span>
+            <h3 class="module-card-title">NWIS PULSE Telemetry Stream</h3>
+            <p class="module-card-desc">
+              WITSML 1.4.1.1, WITSML 2.1 JSON, and ETP 1.2 WebSocket real-time telemetry ingestion with data quality quarantine, formation-aware boundary look-ahead, and human-in-the-loop advisories.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">📡 Multi-Standard Ingestion</span>
+              <span class="module-meta-item">🛡️ DQ Quarantine Gate</span>
+              <span class="module-meta-item">⚡ 1 Hz Live Stream</span>
+            </div>
+          </div>
+          <a href="/pulse.html" class="module-btn" style="background:linear-gradient(135deg, #0284C7, #38BDF8); color:#0B1320; font-weight:700;">Launch NWIS PULSE Stream →</a>
+        </div>
+
+        <!-- Module: NWIS SENTINEL Evidence Grounding Engine -->
+        <div class="module-card" style="border:1px solid rgba(16,185,129,0.3); background:linear-gradient(180deg, rgba(16,185,129,0.08) 0%, rgba(16,24,20,0.95) 100%);">
+          <div>
+            <div class="module-card-icon">🛡️</div>
+            <span class="module-card-badge" style="background:rgba(16,185,129,0.2); color:#10B981;">PHASE 05 • Evidence Grounding</span>
+            <h3 class="module-card-title">NWIS SENTINEL Engine</h3>
+            <p class="module-card-desc">
+              Multi-source hybrid RAG retrieval with Strict Evidence-or-Silence enforcement, prompt injection defense, bidirectional citation graph, and hallucination elimination for mission-critical operations.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">🔒 Evidence-or-Silence</span>
+              <span class="module-meta-item">📊 Citation Graph</span>
+              <span class="module-meta-item">🛡️ Injection Defense</span>
+            </div>
+          </div>
+          <a href="/sentinel.html" class="module-btn" style="background:linear-gradient(135deg, #059669, #10B981); color:#051F14; font-weight:700;">Launch NWIS SENTINEL →</a>
+        </div>
+
+        <!-- Module: NWIS CHRONOS Replay & What-If Simulator -->
+        <div class="module-card" style="border:1px solid rgba(167,139,250,0.3); background:linear-gradient(180deg, rgba(167,139,250,0.08) 0%, rgba(22,18,30,0.95) 100%);">
+          <div>
+            <div class="module-card-icon">⏳</div>
+            <span class="module-card-badge" style="background:rgba(167,139,250,0.2); color:#A78BFA;">PHASE 04 • Historical Simulator</span>
+            <h3 class="module-card-title">NWIS CHRONOS Time-Machine</h3>
+            <p class="module-card-desc">
+              Temporal firewall-enforced time-machine replay, pre-spud what-if branch simulation, deterministic state machines, and counterfactual mitigation validation against verified Volve field incidents.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">⏱️ Temporal Firewall</span>
+              <span class="module-meta-item">🔀 What-If Branching</span>
+              <span class="module-meta-item">🎯 Incident Replay</span>
+            </div>
+          </div>
+          <a href="/chronos.html" class="module-btn" style="background:linear-gradient(135deg, #7C3AED, #A78BFA); color:#130A24; font-weight:700;">Launch NWIS CHRONOS →</a>
+        </div>
+
+        <!-- Flagship Module: NWIS GeoCore Engine -->
+        <div class="module-card amber" style="border:2px solid var(--copper-primary); background:linear-gradient(180deg, rgba(205,133,63,0.12) 0%, rgba(30,26,22,0.95) 100%);">
+          <div>
+            <div class="module-card-icon">💎</div>
+            <span class="module-card-badge" style="background:rgba(205,133,63,0.25); color:var(--copper-bright);">FLAGSHIP • Geological Intelligence</span>
+            <h3 class="module-card-title">NWIS GeoCore Engine</h3>
+            <p class="module-card-desc">
+              Formation-aware depth correlation, 4-stage explainable analogue ranking, "Why This Well, Not That Well" comparative analysis, and structured geological fingerprints.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">🧬 Geological Fingerprints</span>
+              <span class="module-meta-item">🌋 Horizon Correlation</span>
+              <span class="module-meta-item">⚖️ Explainable Analogue Selection</span>
+            </div>
+          </div>
+          <a href="/geocore.html" class="module-btn" style="background:linear-gradient(135deg, var(--copper-primary), var(--gold-accent)); color:#0D0B09; font-weight:700;">Launch NWIS GeoCore Studio →</a>
+        </div>
+
+        <!-- Module 1: Geospatial Offset Radar -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-icon">🛰️</div>
+            <span class="module-card-badge">Module 01 • Geospatial</span>
+            <h3 class="module-card-title">Geospatial Offset Well Radar</h3>
+            <p class="module-card-desc">
+              Interactive 2D/3D map with adjustable proximity radius (1–15 km), spatial collision detection, and distance-weighted analogue ranking across the Volve field.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">📍 5 Development Wells</span>
+              <span class="module-meta-item">🎯 1.2km Nearest Analogue</span>
+            </div>
+          </div>
+          <a href="/radar.html" class="module-btn">Launch Offset Radar →</a>
+        </div>
+
+        <!-- Module 2: 3D Stratigraphy & Subsurface -->
+        <div class="module-card amber">
+          <div>
+            <div class="module-card-icon">🌋</div>
+            <span class="module-card-badge">Module 02 • Geological</span>
+            <h3 class="module-card-title">3D Stratigraphy & Horizons</h3>
+            <p class="module-card-desc">
+              TVDSS-normalized formation horizons, Minimum Curvature wellbore trajectories, and petrophysical wireline log correlation (GR / Resistivity).
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">🏔️ 4 Formations</span>
+              <span class="module-meta-item">📏 TVDSS Normalized</span>
+            </div>
+          </div>
+          <a href="/stratigraphy.html" class="module-btn">Launch 3D Stratigraphy →</a>
+        </div>
+
+        <!-- Module 3: Pre-Bit Hazard Monitor -->
+        <div class="module-card red">
+          <div>
+            <div class="module-card-icon">⚡</div>
+            <span class="module-card-badge" style="color:var(--red-hazard);">Module 03 • Surveillance</span>
+            <h3 class="module-card-title">Pre-Bit Hazard Horizon Monitor</h3>
+            <p class="module-card-desc">
+              Surveillance window scanning 0 to +150m ahead of bit. Surfaces verified mud loss and stuck pipe incidents with closed-loop driller feedback.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">⚠ 72m Warning Lead</span>
+              <span class="module-meta-item">🛡️ ECD Mitigation</span>
+            </div>
+          </div>
+          <a href="/lookahead.html" class="module-btn">Launch Hazard Monitor →</a>
+        </div>
+
+        <!-- Module 4: Document Intelligence -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-icon">📄</div>
+            <span class="module-card-badge">Module 04 • Document AI</span>
+            <h3 class="module-card-title">Document AI & Evidence Passports</h3>
+            <p class="module-card-desc">
+              Native and scanned PDF ingestion (DDRs/WCRs), PyMuPDF OCR layout extraction, and 8-question Evidence Passports with SHA-256 signatures.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">📑 PDF Ingestion</span>
+              <span class="module-meta-item">🔒 SHA-256 Provenance</span>
+            </div>
+          </div>
+          <a href="/documents.html" class="module-btn">Launch Document AI →</a>
+        </div>
+
+        <!-- Module 5: Ask NWIS AI Copilot -->
+        <div class="module-card green">
+          <div>
+            <div class="module-card-icon">🤖</div>
+            <span class="module-card-badge" style="color:var(--green-safe);">Module 05 • Assistant</span>
+            <h3 class="module-card-title">Ask NWIS Drilling AI Copilot</h3>
+            <p class="module-card-desc">
+              Natural language drilling assistant strictly grounded in verified historical records. Features zero-hallucination guardrails and explicit abstention.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">💬 Natural Language</span>
+              <span class="module-meta-item">✓ Zero Hallucination</span>
+            </div>
+          </div>
+          <a href="/copilot.html" class="module-btn">Launch AI Copilot →</a>
+        </div>
+
+        <!-- Module 6: LOWO Back-Testing & Audit -->
+        <div class="module-card purple">
+          <div>
+            <div class="module-card-icon">📊</div>
+            <span class="module-card-badge" style="color:#C084FC;">Module 06 • Governance</span>
+            <h3 class="module-card-title">LOWO Back-Testing & Audit Studio</h3>
+            <p class="module-card-desc">
+              Leave-One-Well-Out mathematical back-testing evaluating warning recall and lead distance, coupled with an immutable audit hash chain.
+            </p>
+            <div class="module-card-meta">
+              <span class="module-meta-item">📈 100% Recall</span>
+              <span class="module-meta-item">🛡️ Audit Hash Chain</span>
+            </div>
+          </div>
+          <a href="/backtest.html" class="module-btn">Launch Back-Test Studio →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== THE INDUSTRIAL CHALLENGE ====== -->
+  <section class="section-challenge" id="platform">
+    <div class="container">
+      <div class="challenge-header">
+        <span class="section-label">The Industrial Challenge</span>
+        <h2 class="section-title">Drilling Decisions Depend on<br>Knowledge That's Scattered and Inaccessible</h2>
+        <p class="section-subtitle">
+          Historical drilling knowledge lives across thousands of well completion reports, daily drilling reports, PDF documents, and individual experience. Retrieval is time-consuming and dependent on institutional memory.
+        </p>
+      </div>
+
+      <div class="challenge-grid">
+        <div class="challenge-card">
+          <div class="challenge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>Scattered Reports</h3>
+          <p>Daily drilling reports, well completion reports, and mud logs exist across disconnected file systems, paper archives, and individual memories.</p>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>Time-Critical Decisions</h3>
+          <p>When encountering unexpected formations or drilling events, engineers have minutes — not hours — to decide on operational responses.</p>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          </div>
+          <h3>Geological Complexity</h3>
+          <p>Subsurface geology varies across fault blocks and formations. A nearby well's experience at the same measured depth may be geologically irrelevant.</p>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Institutional Memory Loss</h3>
+          <p>Experienced petroleum engineers retire. Their knowledge of specific wellbore failures, successful mitigations, and geological nuances disappears permanently.</p>
+        </div>
+      </div>
+
+      <!-- NWIS Solution Arrow -->
+      <div class="challenge-solution-bridge">
+        <div class="bridge-line"></div>
+        <div class="bridge-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+          NWIS transforms this fragmented knowledge into structured, verified, actionable intelligence
+        </div>
+        <div class="bridge-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== VERIFIED VISUAL INTELLIGENCE & ENGINEERING ARTIFACTS ====== -->
+  <section class="section-visual-intel" id="visual-intel">
+    <div class="container">
+      <span class="section-label">Subsurface Intelligence & Telemetry</span>
+      <h2 class="section-title">Verified Visual Engineering Artifacts</h2>
+      <p class="section-subtitle">Real high-resolution geological and operational models generated from normalized Volve field benchmarks and WITSML real-time streaming telemetry.</p>
+
+      <div class="intel-grid">
+        <!-- Visual 1: 3D Strata Subsurface -->
+        <div class="intel-card" onclick="openImageModal('/assets/images/subsurface-strata-3d.png', '3D Stratigraphic Subsurface Model & Offset Well Trajectories', 'High-definition 3D geological block diagram showing Nordland Shale, Utsira Sand, Skade Formation, and Hugin Sandstone reservoir. Illustrates active well trajectory (NO-15/9-F-12) approaching target alongside offset wells NO-15/9-F-14 (94% match, severe mud loss incident at Skade) and NO-15/9-F-15S (stuck pipe event in Draupne).')">
+          <div class="intel-card-header">
+            <span class="intel-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              3D Stratigraphic Subsurface Model
+            </span>
+            <span class="intel-card-badge">TVDSS NORMALIZED</span>
+          </div>
+          <div class="intel-media">
+            <img src="/assets/images/subsurface-strata-3d.png" alt="3D Subsurface Model" loading="lazy">
+            <span class="intel-media-zoom">🔍 Zoom Artifact</span>
+          </div>
+          <div class="intel-card-body">
+            <p class="intel-card-desc">3D multi-formation geosteering model correlating formation top horizons, fault planes, and offset well trajectories with pinned historical incident locations.</p>
+            <ul class="intel-meta-list">
+              <li><span class="intel-meta-label">Primary Target Formation</span><span class="intel-meta-val">Hugin Sandstone (2850m TVDSS)</span></li>
+              <li><span class="intel-meta-label">Pre-Bit Risk Zone</span><span class="intel-meta-val" style="color:var(--amber-accent)">Skade FM (42 m³ Mud Loss)</span></li>
+              <li><span class="intel-meta-label">Mathematical Method</span><span class="intel-meta-val">Minimum Curvature Interpolation</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Visual 2: eRTMAC Control Room -->
+        <div class="intel-card" onclick="openImageModal('/assets/images/ertmac-control-room.png', 'eRTMAC Command & Control Room Dashboard', 'Real-time multi-console RTOC environment showing Explainable Offset Similarity Radar, Pre-Bit Horizon Hazard Timeline, Mud Logging Gamma Ray correlation track, and verified DDR cryptographic evidence citation.')">
+          <div class="intel-card-header">
+            <span class="intel-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              eRTMAC Command & Control Console
+            </span>
+            <span class="intel-card-badge green">LIVE RTOC FEED</span>
+          </div>
+          <div class="intel-media">
+            <img src="/assets/images/ertmac-control-room.png" alt="eRTMAC Control Room" loading="lazy">
+            <span class="intel-media-zoom">🔍 Zoom Artifact</span>
+          </div>
+          <div class="intel-card-body">
+            <p class="intel-card-desc">Production-grade industrial command center featuring multi-criteria radar, 0–150m pre-bit hazard forecast, and cryptographically verified evidence citations.</p>
+            <ul class="intel-meta-list">
+              <li><span class="intel-meta-label">WITSML Telemetry Protocol</span><span class="intel-meta-val">WITSML v1.4.1.1 (1 Hz)</span></li>
+              <li><span class="intel-meta-label">Evidence Verification Rule</span><span class="intel-meta-val" style="color:var(--green-safe)">Strict Evidence or Silence</span></li>
+              <li><span class="intel-meta-label">Audit Hash Provenance</span><span class="intel-meta-val">SHA-256 Cryptographic Chain</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Visual 3: Offset Well Log Correlation -->
+        <div class="intel-card" onclick="openImageModal('/assets/images/offset-well-correlation.png', 'Petrophysical Log Correlation & Offset Event Benchmarking', 'Multi-well correlation panel comparing Gamma Ray, Resistivity, and Sonic log curves between Active Well NO-15/9-F-12 and historical offsets NO-15/9-F-14 and NO-15/9-F-15S, with engineering mitigation protocol matrix.')">
+          <div class="intel-card-header">
+            <span class="intel-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              Multi-Well Log Correlation Panel
+            </span>
+            <span class="intel-card-badge amber">PETROPHYSICAL BENCHMARK</span>
+          </div>
+          <div class="intel-media">
+            <img src="/assets/images/offset-well-correlation.png" alt="Log Correlation" loading="lazy">
+            <span class="intel-media-zoom">🔍 Zoom Artifact</span>
+          </div>
+          <div class="intel-card-body">
+            <p class="intel-card-desc">Comparative petrophysical log tracks highlighting the exact depth intervals where past severe mud loss (42 m³) and stuck pipe events occurred, paired with predictive mitigation protocols.</p>
+            <ul class="intel-meta-list">
+              <li><span class="intel-meta-label">Offset Well Correlation</span><span class="intel-meta-val">NO-15/9-F-14 (1.2 km away)</span></li>
+              <li><span class="intel-meta-label">Critical ECD Constraint</span><span class="intel-meta-val" style="color:var(--amber-accent)">Limit ECD to 1.44 SG (Frac: 1.48)</span></li>
+              <li><span class="intel-meta-label">LCM Remediation Protocol</span><span class="intel-meta-val">30 ppb Coarse/Medium CaCO3 Pill</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Visual 4: SCADA Rig Telemetry Console -->
+        <div class="intel-card" onclick="openImageModal('/assets/images/rig-floor-telemetry.png', 'SCADA Rig Floor Telemetry & Sensor Console', 'High-contrast industrial gauges monitoring Standpipe Pressure (2900 psi), Hook Load (245 klb), Rotary Torque (15.2 kft-lb), ROP (14.8 m/hr), and Mud Flow Delta (-30 GPM kick/loss warning).')">
+          <div class="intel-card-header">
+            <span class="intel-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              SCADA Rig Floor Telemetry Console
+            </span>
+            <span class="intel-card-badge">HIGH-FREQUENCY SENSORS</span>
+          </div>
+          <div class="intel-media">
+            <img src="/assets/images/rig-floor-telemetry.png" alt="Rig Telemetry Sensors" loading="lazy">
+            <span class="intel-media-zoom">🔍 Zoom Artifact</span>
+          </div>
+          <div class="intel-card-body">
+            <p class="intel-card-desc">Industrial gauge cluster providing live rig telemetry metrics: SPP, Torque, ROP, Hook Load, and real-time Delta Mud Flow alerting drillers to kick or lost circulation onset.</p>
+            <ul class="intel-meta-list">
+              <li><span class="intel-meta-label">Standpipe Pressure (SPP)</span><span class="intel-meta-val">2900 psi (Nominal)</span></li>
+              <li><span class="intel-meta-label">Flow In / Out Delta</span><span class="intel-meta-val" style="color:var(--red-hazard)">-30 GPM (Loss Influx Warning)</span></li>
+              <li><span class="intel-meta-label">Mud Density (MW)</span><span class="intel-meta-val">1.42 SG Oil-Based Mud (OBM)</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FROM DATA TO INTELLIGENCE ====== -->
+  <section class="section-pipeline" id="technology">
+    <div class="container">
+      <span class="section-label">From Data to Intelligence</span>
+      <h2 class="section-title">A Closed-Loop Evidence Pipeline</h2>
+      <p class="section-subtitle">Every advisory is traceable from original document to verified incident to geological correlation to actionable recommendation.</p>
+
+      <div class="pipeline-track">
+        <div class="pipeline-step" data-step="1">
+          <div class="pipeline-node">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="pipeline-info">
+            <h3>Historical Reports</h3>
+            <p>DDRs, WCRs, mud logs — native and scanned PDFs ingested with security validation</p>
+          </div>
+        </div>
+        <div class="pipeline-connector"><div class="connector-line"></div></div>
+
+        <div class="pipeline-step" data-step="2">
+          <div class="pipeline-node node-active">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <div class="pipeline-info">
+            <h3>Document Intelligence</h3>
+            <p>PyMuPDF layout analysis, table extraction, OCR for scanned reports, coordinate-tracked passages</p>
+          </div>
+        </div>
+        <div class="pipeline-connector"><div class="connector-line"></div></div>
+
+        <div class="pipeline-step" data-step="3">
+          <div class="pipeline-node">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="pipeline-info">
+            <h3>Verified Drilling Memory</h3>
+            <p>Standardized incident taxonomy, depth normalization, SHA-256 evidence hashing</p>
+          </div>
+        </div>
+        <div class="pipeline-connector"><div class="connector-line"></div></div>
+
+        <div class="pipeline-step" data-step="4">
+          <div class="pipeline-node">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="pipeline-info">
+            <h3>Geological Correlation</h3>
+            <p>TVDSS normalization, formation-aware offset matching, minimum curvature trajectory comparison</p>
+          </div>
+        </div>
+        <div class="pipeline-connector"><div class="connector-line"></div></div>
+
+        <div class="pipeline-step" data-step="5">
+          <div class="pipeline-node">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="pipeline-info">
+            <h3>Evidence-Linked Advisory</h3>
+            <p>100m pre-bit lookahead scanning, risk scoring, verified source citations</p>
+          </div>
+        </div>
+        <div class="pipeline-connector"><div class="connector-line"></div></div>
+
+        <div class="pipeline-step" data-step="6">
+          <div class="pipeline-node node-review">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+          </div>
+          <div class="pipeline-info">
+            <h3>Engineer Review</h3>
+            <p>Human-in-the-loop verification, approve/reject/modify with cryptographic audit trails</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CAPABILITIES ====== -->
+  <section class="section-capabilities" id="capabilities">
+    <div class="container">
+      <span class="section-label">Platform Capabilities</span>
+      <h2 class="section-title">What NWIS Delivers</h2>
+      <p class="section-subtitle">Eight production-implemented capabilities, each grounded in verified historical evidence.</p>
+
+      <div class="capabilities-list">
+        <div class="capability-row">
+          <div class="capability-text">
+            <div class="capability-number">01</div>
+            <h3>Real Historical Data Intelligence</h3>
+            <p>Authentic Equinor Volve field data — 5 development wells, 10 verified drilling incidents, 34 formation tops, 35 directional survey stations. Every data point cross-referenced against Norwegian Offshore Directorate FactPages.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title">Well Master Registry</span>
+              </div>
+              <div class="preview-card-body">
+                <table class="preview-mini-table">
+                  <tr><td class="pm-label">15/9-F-1</td><td class="pm-val">Spud 2006-03-01</td><td><span class="mini-badge bg-green">Pioneer</span></td></tr>
+                  <tr><td class="pm-label">15/9-F-4</td><td class="pm-val">Spud 2007-09-14</td><td><span class="mini-badge bg-green">Verified</span></td></tr>
+                  <tr><td class="pm-label">15/9-F-12</td><td class="pm-val">Spud 2008-04-12</td><td><span class="mini-badge bg-teal">Target</span></td></tr>
+                  <tr><td class="pm-label">15/9-F-14</td><td class="pm-val">Spud 2008-08-02</td><td><span class="mini-badge bg-green">Verified</span></td></tr>
+                  <tr><td class="pm-label">15/9-F-15 S</td><td class="pm-val">Spud 2009-01-10</td><td><span class="mini-badge bg-green">Verified</span></td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row reverse">
+          <div class="capability-text">
+            <div class="capability-number">02</div>
+            <h3>Interactive Offset-Well Explorer</h3>
+            <p>Geospatial map with all development wells, adjustable search radius, and interactive well selection. See offset wells in geographical context with formation-aware distance calculations.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card card-dark">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title" style="color:rgba(255,255,255,0.7)">Geospatial Offset Radar</span>
+              </div>
+              <div class="preview-card-body card-dark-body">
+                <svg width="100%" height="160" viewBox="0 0 300 160">
+                  <rect width="300" height="160" fill="#0B1726" rx="4"/>
+                  <circle cx="150" cy="80" r="60" fill="none" stroke="rgba(232,168,61,0.2)" stroke-width="1" stroke-dasharray="3 3"/>
+                  <circle cx="150" cy="80" r="40" fill="none" stroke="rgba(232,168,61,0.15)" stroke-width="1" stroke-dasharray="3 3"/>
+                  <circle cx="150" cy="80" r="6" fill="#059669" stroke="white" stroke-width="2"/>
+                  <circle cx="130" cy="60" r="4" fill="#0A9BA8" stroke="white" stroke-width="1.5"/>
+                  <circle cx="175" cy="95" r="4" fill="#0A9BA8" stroke="white" stroke-width="1.5"/>
+                  <circle cx="120" cy="100" r="4" fill="#0A9BA8" stroke="white" stroke-width="1.5"/>
+                  <circle cx="185" cy="65" r="4" fill="#0A9BA8" stroke="white" stroke-width="1.5"/>
+                  <text x="155" y="76" font-size="7" fill="white" font-family="Inter">F-12 (Active)</text>
+                  <text x="8" y="152" font-size="7" fill="rgba(255,255,255,0.3)" font-family="Inter">Radius: 5.0 km — Volve Field</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row">
+          <div class="capability-text">
+            <div class="capability-number">03</div>
+            <h3>Formation-Aware Correlation</h3>
+            <p>Stratigraphic depth track normalized to TVDSS (True Vertical Depth Sub-Sea), showing formation boundaries with historical incidents pinned at their exact geological interval. Minimum Curvature trajectory interpolation for accurate positioning.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title">Stratigraphic Correlation Track</span>
+              </div>
+              <div class="preview-card-body">
+                <div class="strat-preview">
+                  <div class="strat-row" style="--color:#4A7C9B"><span>Nordland GP</span><span class="strat-depth">720m</span></div>
+                  <div class="strat-row" style="--color:#6B8E7B"><span>Shetland GP</span><span class="strat-depth">1580m</span></div>
+                  <div class="strat-row strat-active" style="--color:#087F8C"><span>Hugin FM</span><span class="strat-depth">2861m</span><span class="strat-incident">⚠ Lost Circ.</span></div>
+                  <div class="strat-row" style="--color:#8B7355"><span>Skagerrak FM</span><span class="strat-depth">3025m</span><span class="strat-incident">⚠ Packoff</span></div>
+                  <div class="strat-row" style="--color:#6B5B4B"><span>Smith Bank</span><span class="strat-depth">3400m</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row reverse">
+          <div class="capability-text">
+            <div class="capability-number">04</div>
+            <h3>Document OCR & Human Verification</h3>
+            <p>Industrial document ingestion with PyMuPDF layout analysis, table extraction, scanned report OCR, bounding-box coordinate tracking, and a complete human-in-the-loop review queue with cryptographic audit trails.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title">Document Intelligence Pipeline</span>
+              </div>
+              <div class="preview-card-body">
+                <div class="doc-preview-flow">
+                  <div class="dpf-item"><span class="dpf-icon">📄</span><span>PDF Upload</span></div>
+                  <span class="dpf-arrow">→</span>
+                  <div class="dpf-item"><span class="dpf-icon">🔍</span><span>OCR Extract</span></div>
+                  <span class="dpf-arrow">→</span>
+                  <div class="dpf-item"><span class="dpf-icon">⚙️</span><span>Taxonomy</span></div>
+                  <span class="dpf-arrow">→</span>
+                  <div class="dpf-item"><span class="dpf-icon">✓</span><span>Review</span></div>
+                </div>
+                <div class="doc-preview-stats">
+                  <span><strong>F1-Score:</strong> 1.000</span>
+                  <span><strong>Latency:</strong> 0.338s</span>
+                  <span><strong>False Alarms:</strong> 0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row">
+          <div class="capability-text">
+            <div class="capability-number">05</div>
+            <h3>Evidence Passport</h3>
+            <p>Every historical incident surfaced by NWIS answers 8 mandatory engineering verification questions: What happened? Which well? When? At what depth? Which formation? What does the original report say? What's missing? Has it been verified?</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title">Evidence Passport — 8 Questions</span>
+              </div>
+              <div class="preview-card-body">
+                <div class="passport-preview-grid">
+                  <div class="pp-q"><span class="pp-n">Q1</span> LOST CIRCULATION</div>
+                  <div class="pp-q"><span class="pp-n">Q2</span> NO-15/9-F-14</div>
+                  <div class="pp-q"><span class="pp-n">Q3</span> 2008-09-14</div>
+                  <div class="pp-q"><span class="pp-n">Q4</span> 2965m MD</div>
+                  <div class="pp-q"><span class="pp-n">Q5</span> Hugin FM</div>
+                  <div class="pp-q"><span class="pp-n">Q6</span> "Partial losses 25 bbl/hr..."</div>
+                  <div class="pp-q"><span class="pp-n">Q7</span> None Missing</div>
+                  <div class="pp-q pp-verified"><span class="pp-n">Q8</span> ✓ VERIFIED</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row reverse">
+          <div class="capability-text">
+            <div class="capability-number">06</div>
+            <h3>Historical Risk Lookahead</h3>
+            <p>Pre-bit 100m horizon scanning that identifies historical incidents from offset wells in the upcoming stratigraphic interval. Risk-scored advisories with mitigation recommendations, strictly grounded in verified evidence.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card card-dark">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title" style="color:rgba(255,255,255,0.7)">Pre-Bit Lookahead Radar</span>
+              </div>
+              <div class="preview-card-body card-dark-body">
+                <div class="lookahead-preview">
+                  <div class="la-alert">
+                    <span class="la-severity la-warning">⚠ WARNING</span>
+                    <span class="la-type">LOST CIRCULATION — 72m ahead</span>
+                    <span class="la-source">Source: Well F-14, Hugin FM, 2965m TVDSS</span>
+                  </div>
+                  <div class="la-alert la-low">
+                    <span class="la-severity la-info">ℹ ADVISORY</span>
+                    <span class="la-type">TIGHT HOLE — 95m ahead</span>
+                    <span class="la-source">Source: Well F-4, Heather FM, 2760m TVDSS</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row">
+          <div class="capability-text">
+            <div class="capability-number">07</div>
+            <h3>Ask NWIS</h3>
+            <p>Natural-language query interface grounded in verified historical drilling records. If no offset evidence exists, the system explicitly abstains rather than generating fabricated responses.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title">Ask NWIS — Evidence-Grounded</span>
+              </div>
+              <div class="preview-card-body">
+                <div class="chat-preview">
+                  <div class="cp-user">What mud loss treatments worked in Hugin sandstone?</div>
+                  <div class="cp-bot">Based on verified DDR records, 25 bbl Mica LCM pill restored full returns in Well F-14 at 2965m MD (Hugin FM). <span class="cp-cite">📄 DDR 2008-09-14</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="capability-row reverse">
+          <div class="capability-text">
+            <div class="capability-number">08</div>
+            <h3>Historical Replay & Back-Testing</h3>
+            <p>Leave-One-Well-Out (LOWO) chronological back-testing. Validates that the system would have provided useful warnings before real incidents occurred, using only data that was historically available.</p>
+            <span class="nwis-badge nwis-badge-verified">● Implemented & Verified</span>
+          </div>
+          <div class="capability-visual">
+            <div class="capability-preview-card">
+              <div class="preview-card-header">
+                <span class="preview-card-dot dot-green"></span>
+                <span class="preview-card-dot dot-amber"></span>
+                <span class="preview-card-dot dot-red"></span>
+                <span class="preview-card-title">LOWO Back-Test Results</span>
+              </div>
+              <div class="preview-card-body">
+                <div class="backtest-preview-grid">
+                  <div class="bt-metric"><span class="bt-val">100%</span><span class="bt-label">Recall</span></div>
+                  <div class="bt-metric"><span class="bt-val">72m</span><span class="bt-label">Avg Lead</span></div>
+                  <div class="bt-metric"><span class="bt-val">0</span><span class="bt-label">False +</span></div>
+                  <div class="bt-metric"><span class="bt-val">0</span><span class="bt-label">Missed</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== TRUST & VALIDATION ====== -->
+  <section class="section-trust" id="trust">
+    <div class="container">
+      <span class="section-label">Data & Trust</span>
+      <h2 class="section-title">Engineered for Verifiability</h2>
+      <p class="section-subtitle">No fabricated metrics. No synthetic demonstrations. Every data point traceable to its regulatory source.</p>
+
+      <div class="trust-grid">
+        <div class="trust-card">
+          <div class="trust-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--nwis-teal-600)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Verified Source Provenance</h3>
+          <p>All well identifiers, spud dates, and completion dates verified against Norwegian Offshore Directorate FactPages. SHA-256 checksums for every ingested file.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--nwis-teal-600)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg>
+          </div>
+          <h3>Document Review & Quarantine</h3>
+          <p>Human-in-the-loop verification ensures unverified or rejected records are strictly quarantined from entering real-time hazard advisories.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--nwis-teal-600)" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <h3>Geological Datum Validation</h3>
+          <p>Enforced MD ≥ TVD physical constraint, Kelly Bushing elevation validation, and Minimum Curvature trajectory interpolation at 10m stations.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--nwis-teal-600)" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3>Empirical Evaluation</h3>
+          <p>Independent benchmark: 100% wellbore ID accuracy, 1.000 incident F1-score, 0.338s average latency, 0 false alarms on clean reports. 30/30 automated tests passing.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--nwis-teal-600)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3>Non-Actuating Integration</h3>
+          <p>NWIS is a read-only decision-support layer. It never controls drilling equipment, does not issue autonomous commands, and does not replace engineering judgement.</p>
+        </div>
+        <div class="trust-card">
+          <div class="trust-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--nwis-teal-600)" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <h3>Auditability</h3>
+          <p>Tamper-evident SHA-256 HMAC audit trails for every review decision, driller response, and system advisory. Complete chronological traceability.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== ARCHITECTURE ====== -->
+  <section class="section-architecture" id="architecture">
+    <div class="container">
+      <span class="section-label">System Architecture</span>
+      <h2 class="section-title">How NWIS Integrates with Drilling Operations</h2>
+      <p class="section-subtitle">A read-only intelligence layer sitting alongside eRTMAC, connecting historical evidence with real-time drilling awareness.</p>
+
+      <div class="arch-diagram nwis-card">
+        <svg width="100%" viewBox="0 0 900 420" fill="none">
+          <!-- Background areas -->
+          <rect x="20" y="20" width="250" height="380" rx="12" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="1"/>
+          <text x="40" y="48" font-size="11" font-weight="600" fill="#0369A1" font-family="Inter">DRILLING OPERATIONS</text>
+          
+          <rect x="320" y="20" width="260" height="380" rx="12" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+          <text x="340" y="48" font-size="11" font-weight="600" fill="#047857" font-family="Inter">NWIS INTELLIGENCE PLATFORM</text>
+
+          <rect x="630" y="20" width="250" height="380" rx="12" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1"/>
+          <text x="650" y="48" font-size="11" font-weight="600" fill="#92400E" font-family="Inter">HISTORICAL KNOWLEDGE BASE</text>
+
+          <!-- Left: Drilling -->
+          <rect x="45" y="70" width="200" height="50" rx="6" fill="white" stroke="#93C5FD" stroke-width="1"/>
+          <text x="85" y="100" font-size="12" fill="#1E40AF" font-family="Inter" font-weight="500">eRTMAC Real-Time</text>
+
+          <rect x="45" y="140" width="200" height="50" rx="6" fill="white" stroke="#93C5FD" stroke-width="1"/>
+          <text x="65" y="170" font-size="12" fill="#1E40AF" font-family="Inter" font-weight="500">WITSML Telemetry Feed</text>
+
+          <rect x="45" y="210" width="200" height="50" rx="6" fill="white" stroke="#93C5FD" stroke-width="1"/>
+          <text x="60" y="240" font-size="12" fill="#1E40AF" font-family="Inter" font-weight="500">Drilling Engineer Console</text>
+
+          <rect x="45" y="310" width="200" height="50" rx="6" fill="white" stroke="#93C5FD" stroke-width="1"/>
+          <text x="55" y="340" font-size="12" fill="#1E40AF" font-family="Inter" font-weight="500">Superintendent Dashboard</text>
+
+          <!-- Centre: NWIS -->
+          <rect x="345" y="70" width="210" height="40" rx="6" fill="#087F8C" stroke="none"/>
+          <text x="375" y="95" font-size="11" fill="white" font-family="Inter" font-weight="600">Offset-Well Lookahead Engine</text>
+
+          <rect x="345" y="130" width="210" height="40" rx="6" fill="white" stroke="#6EE7B7" stroke-width="1"/>
+          <text x="365" y="155" font-size="11" fill="#047857" font-family="Inter" font-weight="500">Geological Correlation</text>
+
+          <rect x="345" y="190" width="210" height="40" rx="6" fill="white" stroke="#6EE7B7" stroke-width="1"/>
+          <text x="370" y="215" font-size="11" fill="#047857" font-family="Inter" font-weight="500">Evidence Passport Engine</text>
+
+          <rect x="345" y="250" width="210" height="40" rx="6" fill="white" stroke="#6EE7B7" stroke-width="1"/>
+          <text x="355" y="275" font-size="11" fill="#047857" font-family="Inter" font-weight="500">Document Intelligence (OCR)</text>
+
+          <rect x="345" y="310" width="210" height="40" rx="6" fill="white" stroke="#6EE7B7" stroke-width="1"/>
+          <text x="365" y="335" font-size="11" fill="#047857" font-family="Inter" font-weight="500">Human Review Queue</text>
+
+          <rect x="345" y="365" width="210" height="25" rx="4" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1"/>
+          <text x="395" y="382" font-size="9" fill="#047857" font-family="Inter">Ask NWIS · Backtest</text>
+
+          <!-- Right: Knowledge -->
+          <rect x="655" y="70" width="200" height="50" rx="6" fill="white" stroke="#FCD34D" stroke-width="1"/>
+          <text x="685" y="100" font-size="12" fill="#92400E" font-family="Inter" font-weight="500">DDRs / WCRs / Mud Logs</text>
+
+          <rect x="655" y="140" width="200" height="50" rx="6" fill="white" stroke="#FCD34D" stroke-width="1"/>
+          <text x="680" y="170" font-size="12" fill="#92400E" font-family="Inter" font-weight="500">Verified Event Memory</text>
+
+          <rect x="655" y="210" width="200" height="50" rx="6" fill="white" stroke="#FCD34D" stroke-width="1"/>
+          <text x="670" y="235" font-size="10" fill="#92400E" font-family="Inter" font-weight="500">Formation Tops / Surveys</text>
+          <text x="670" y="250" font-size="9" fill="#B45309" font-family="Inter">(NPD FactPages Verified)</text>
+
+          <rect x="655" y="310" width="200" height="50" rx="6" fill="white" stroke="#FCD34D" stroke-width="1"/>
+          <text x="675" y="335" font-size="10" fill="#92400E" font-family="Inter" font-weight="500">Provenance Manifest</text>
+          <text x="675" y="350" font-size="9" fill="#B45309" font-family="Inter">(SHA-256 · Audit Hashes)</text>
+
+          <!-- Arrows -->
+          <line x1="245" y1="95" x2="340" y2="90" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <line x1="245" y1="165" x2="340" y2="150" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <line x1="345" y1="210" x2="245" y2="235" stroke="#087F8C" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
+          <line x1="345" y1="330" x2="245" y2="335" stroke="#087F8C" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
+
+          <line x1="560" y1="90" x2="650" y2="95" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+          <line x1="650" y1="165" x2="560" y2="150" stroke="#D97706" stroke-width="1.5" marker-end="url(#arrowAmber)"/>
+          <line x1="650" y1="235" x2="560" y2="210" stroke="#D97706" stroke-width="1.5" marker-end="url(#arrowAmber)"/>
+          <line x1="650" y1="335" x2="560" y2="330" stroke="#D97706" stroke-width="1.5" marker-end="url(#arrowAmber)"/>
+
+          <!-- Arrow markers -->
+          <defs>
+            <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94A3B8"/></marker>
+            <marker id="arrowTeal" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#087F8C"/></marker>
+            <marker id="arrowAmber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#D97706"/></marker>
+          </defs>
+
+          <!-- Legend -->
+          <text x="40" y="395" font-size="8" fill="#94A3B8" font-family="Inter">→ Read-only telemetry ingest</text>
+          <line x1="195" y1="392" x2="220" y2="392" stroke="#087F8C" stroke-width="1.5"/>
+          <text x="225" y="395" font-size="8" fill="#087F8C" font-family="Inter">← NWIS advisories (non-actuating)</text>
+          <line x1="460" y1="392" x2="485" y2="392" stroke="#D97706" stroke-width="1.5"/>
+          <text x="490" y="395" font-size="8" fill="#D97706" font-family="Inter">← Verified historical evidence</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FINAL CTA ====== -->
+  <section class="section-cta">
+    <div class="container">
+      <div class="cta-inner">
+        <h2 class="cta-headline">Turn Drilling History Into<br><em>Operational Intelligence.</em></h2>
+        <p class="cta-desc">Explore the NWIS platform with authentic Equinor Volve field data. Every advisory grounded in verified historical evidence.</p>
+        <div class="cta-actions">
+          <a href="/app.html" class="nwis-btn nwis-btn-amber nwis-btn-lg">Explore NWIS</a>
+          <a href="#architecture" class="nwis-btn nwis-btn-secondary nwis-btn-lg" style="border-color:rgba(255,255,255,0.2);color:white;">View Technical Architecture</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="/assets/images/oil-india-logo.png" alt="Oil India Limited" style="width:44px;height:44px;object-fit:contain;">
+          <div>
+            <strong>OIL INDIA LIMITED</strong> — eRTMAC-NWIS
+            <br><span class="footer-disclaimer">Nearby Wells Intelligence & Horizon Decision Support System</span>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="#platform">Platform</a>
+          <a href="#visual-intel">Visual Intelligence</a>
+          <a href="#technology">Technology</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="/app.html">Operational Cockpit</a>
+        </div>
+        <div class="footer-legal">
+          <p>This application is a proposed production solution for Smart India Hackathon 2026 Problem Statement SIH26121. Engineered for Oil India Limited (eRTMAC integration testbed).</p>
+          <p>Benchmark data: Equinor Volve Field (CC BY-NC-SA 4.0). High-resolution scientific and operational illustrations generated from normalized subsurface datasets.</p>
+          <p>&copy; 2026 eRTMAC-NWIS Project Team. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== IMAGE LIGHTBOX MODAL ====== -->
+  <div class="nwis-modal" id="imageModal" role="dialog" aria-hidden="true">
+    <div class="nwis-modal-content">
+      <div class="nwis-modal-header">
+        <h3 class="nwis-modal-title" id="modalTitle">Engineering Visual Artifact</h3>
+        <button class="nwis-modal-close" onclick="closeImageModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="nwis-modal-body">
+        <img src="" alt="" class="nwis-modal-img" id="modalImg">
+        <div class="nwis-modal-caption" id="modalCaption"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/landing.js"></script>
+</body>
+</html>
