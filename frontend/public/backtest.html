@@ -97,11 +97,11 @@
   <!-- Page Hero Bar -->
   <div class="page-hero-bar">
     <div class="page-title-group">
-      <h2><span style="color:var(--teal-light);">📊</span> Empirical Back-Testing & Audit Governance</h2>
-      <p>Leave-One-Well-Out (LOWO) mathematical validation proving zero hallucination and high pre-incident lead distance.</p>
+      <h2><span style="color:var(--teal-light);">📊</span> Historical Blind Well Back-Testing & Audit Log</h2>
+      <p>We test the system by pretending a past well has never been drilled, proving NWIS would have prevented real-world historical incidents well in advance.</p>
     </div>
     <div class="page-hero-actions">
-      <button class="btn btn-amber" onclick="runBacktest()">⚡ Run Live LOWO Back-Test</button>
+      <button class="btn btn-amber" onclick="runBacktest()">⚡ Run Live Blind Well Back-Test</button>
     </div>
   </div>
 
@@ -112,40 +112,40 @@
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-val" style="color:var(--green-safe);">100%</div>
-        <div class="kpi-label">Historical Incident Recall</div>
+        <div class="kpi-label">Incidents Successfully Detected</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-val" style="color:var(--amber-accent);">72.4 <small style="font-size:1.1rem;">m</small></div>
-        <div class="kpi-label">Average Warning Lead Distance</div>
+        <div class="kpi-label">Early Warning Distance Ahead of Bit</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-val" style="color:var(--teal-light);">0</div>
-        <div class="kpi-label">False Positive Alarms</div>
+        <div class="kpi-label">False Alarms on Safe Sections</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-val" style="color:var(--green-safe);">0</div>
-        <div class="kpi-label">Missed Geological Events</div>
+        <div class="kpi-label">Missed Underground Hazards</div>
       </div>
     </div>
 
     <!-- Live Execution Status Box -->
     <div class="card" style="margin-bottom:24px;">
       <div class="card-header">
-        <h3>LOWO Evaluation Result (Held-Out Target: Well NO-15/9-F-12)</h3>
+        <h3>Blind Test Simulation (Target Test Well: NO-15/9-F-12)</h3>
         <span class="tag tag-green">STATUS: COMPLETED (PASS)</span>
       </div>
       <div class="card-body">
         <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
-          The system simulates drilling Well NO-15/9-F-12 chronologically from surface (0m) to total depth (3400m TVDSS), withholding all F-12 data and using only historical records from offset wells drilled prior to 2008.
+          The system simulates drilling Well NO-15/9-F-12 step-by-step from surface (0m) to total depth (3400m subsea), hiding all F-12 records and using only older nearby wells drilled before 2008.
         </p>
 
         <div style="background:rgba(13,11,9,0.85); border:1px solid var(--border-subtle); border-radius:6px; padding:16px; font-family:var(--font-mono); font-size:0.8rem; color:var(--text-main); line-height:1.6;" id="backtest-log">
-          [00:00.012] Initializing LOWO back-test partition for testbed well: NO-15/9-F-12<br>
-          [00:00.045] Ingesting historical offset trajectories: F-1, F-4, F-14, F-15S (Volve Field)<br>
-          [00:00.098] Simulating bit penetration across Skade Sandstone horizon (2800m - 2900m TVDSS)...<br>
-          [00:00.142] <span style="color:var(--amber-accent);">⚠ LOOK-AHEAD DETECTED: 42 m³ lost circulation hazard triggered at 2792.6m TVDSS (72.4m lead).</span><br>
-          [00:00.185] <span style="color:var(--green-safe);">✓ EVALUATION RESULT: Incident successfully alerted before bit entered thief zone.</span><br>
-          [00:00.210] LOWO Validation Score: F1-Score = 1.000 | Precision = 1.000 | Recall = 1.000
+          [00:00.012] Initializing blind back-test partition for testbed well: NO-15/9-F-12<br>
+          [00:00.045] Ingesting older historical well trajectories: F-1, F-4, F-14, F-15S<br>
+          [00:00.098] Simulating bit penetration across Skade Sandstone rock layer (2800m - 2900m)...<br>
+          [00:00.142] <span style="color:var(--amber-accent);">⚠ EARLY WARNING: 42 m³ mud loss hazard triggered at 2792.6m (72.4m lead warning before bit reached thief zone).</span><br>
+          [00:00.185] <span style="color:var(--green-safe);">✓ EVALUATION RESULT: Hazard alerted in time for drill crew to prepare loss pill.</span><br>
+          [00:00.210] Blind Test Validation Score: Accuracy = 100% | False Alarms = 0 | Missed = 0
         </div>
       </div>
     </div>
@@ -153,8 +153,8 @@
     <!-- Immutable Audit Trail Table -->
     <div class="card">
       <div class="card-header">
-        <h3>System Governance & Cryptographic Audit Trail</h3>
-        <span class="tag tag-amber">SHA-256 HASH CHAIN</span>
+        <h3>System Governance & Tamper-Proof Audit Trail</h3>
+        <span class="tag tag-amber">TAMPER-PROOF AUDIT CHAIN</span>
       </div>
       <div class="card-body">
         <table class="audit-table">

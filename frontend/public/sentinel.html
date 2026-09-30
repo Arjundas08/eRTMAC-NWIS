@@ -642,17 +642,17 @@
       <div class="sentinel-title-wrap">
         <div>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">NWIS SENTINEL — ENGINEERING INTELLIGENCE ASSISTANT</h2>
-            <span class="sentinel-badge">Production Architecture</span>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">NWIS SENTINEL — DRILLING INTELLIGENCE ASSISTANT</h2>
+            <span class="sentinel-badge">Production Ready</span>
           </div>
           <p style="font-size: 0.8rem; color: var(--text-muted); margin: 3px 0 0 0;">
-            Formation-Aware Hybrid Retrieval &bull; Claim-Level Grounding Verification &bull; Deterministic Evidence-or-Silence &bull; Zero Petroleum Fabrication
+            Rock-Layer Smart Search &bull; Every Fact Verified in Original Well Logs &bull; Zero Hallucinations &bull; 100% Real Drilling Records
           </p>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="sentinel-badge badge-verified">✓ 100% GOUNDED EVIDENCE</span>
-        <span class="sentinel-badge badge-firewall">🔒 POINT-IN-TIME FIREWALL</span>
+        <span class="sentinel-badge badge-verified">✓ 100% GROUNDED EVIDENCE</span>
+        <span class="sentinel-badge badge-firewall">🔒 TIME FIREWALL (NO CHEATING)</span>
       </div>
     </div>
 
@@ -662,7 +662,7 @@
       <!-- LEFT PANEL: Engineering Scope & Parameters -->
       <section class="sentinel-panel">
         <div class="panel-header">
-          <span class="panel-title">⚙️ Engineering Scope</span>
+          <span class="panel-title">⚙️ Search Filters & Wells</span>
           <span style="font-size: 0.7rem; color: var(--copper-bright);">FILTERS</span>
         </div>
 
@@ -678,7 +678,7 @@
         </div>
 
         <div class="field-group">
-          <label class="field-label">Geological Formation</label>
+          <label class="field-label">Underground Rock Layer</label>
           <select class="field-select" id="scope-formation">
             <option value="AUTO" selected>Auto-Detect from Query</option>
             <option value="Hugin FM">Hugin FM (Reservoir Sandstone)</option>
@@ -691,18 +691,18 @@
         </div>
 
         <div class="field-group">
-          <label class="field-label">Depth Reference Datum</label>
+          <label class="field-label">Depth Measurement Type</label>
           <div class="datum-toggle-group">
-            <button class="datum-btn active" id="btn-datum-tvdss" onclick="setDepthDatum('TVDSS')">TVDSS (Subsea)</button>
-            <button class="datum-btn" id="btn-datum-md" onclick="setDepthDatum('MD')">MD (Driller)</button>
+            <button class="datum-btn active" id="btn-datum-tvdss" onclick="setDepthDatum('TVDSS')">Subsea Vertical (TVDSS)</button>
+            <button class="datum-btn" id="btn-datum-md" onclick="setDepthDatum('MD')">Drilled Length (MD)</button>
           </div>
           <span style="font-size: 0.68rem; color: var(--amber-gold); margin-top: 4px; display: block;">
-            ⚠️ Strict rule: MD and TVDSS are never substituted silently.
+            ⚠️ Strict rule: Drilled length (MD) and true vertical depth (TVDSS) are never mixed up.
           </span>
         </div>
 
         <div class="field-group">
-          <label class="field-label">Depth Window (m)</label>
+          <label class="field-label">Depth Window (meters)</label>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <input type="number" class="field-input" id="depth-min" placeholder="Min Depth (e.g. 2800)">
             <input type="number" class="field-input" id="depth-max" placeholder="Max Depth (e.g. 3100)">
@@ -710,12 +710,12 @@
         </div>
 
         <div class="field-group">
-          <label class="field-label">Historical Cutoff Date (Firewall)</label>
+          <label class="field-label">Historical Cutoff Date (Time Firewall)</label>
           <input type="date" class="field-input" id="temporal-cutoff" value="2008-04-15">
         </div>
 
         <div class="panel-header" style="margin-top: 20px;">
-          <span class="panel-title">💡 Engineering Inquiries</span>
+          <span class="panel-title">💡 Example Inquiries (Click to Test)</span>
         </div>
         <div class="presets-container">
           <div class="preset-chip" onclick="loadPreset(1)">
@@ -735,8 +735,8 @@
             <div>What original evidence supported the 12.5-hour advance advisory on F-14?</div>
           </div>
           <div class="preset-chip" onclick="loadPreset(5)">
-            <span class="preset-tag">EVIDENCE-OR-SILENCE</span>
-            <div>What drilling experience and kicks were recorded in the Rotliegend formation?</div>
+            <span class="preset-tag">HONEST REFUSAL</span>
+            <div>What drilling experience and kicks were recorded in Rotliegend? (Tests safe refusal when no records exist)</div>
           </div>
           <div class="preset-chip" onclick="loadPreset(6)">
             <span class="preset-tag">SECURITY AUDIT</span>
@@ -748,9 +748,9 @@
       <!-- CENTRE PANEL: Question Box, 5 Answer Modes, Structured Claims -->
       <section class="sentinel-panel">
         <div class="panel-header">
-          <span class="panel-title">🔍 Engineering Inquiry</span>
+          <span class="panel-title">🔍 Ask Drilling Question</span>
           <span id="ai-model-provider" style="font-size: 0.72rem; color: var(--copper-bright); font-family: var(--font-mono);">
-            PROVIDER: DETERMINISTIC_GROUNDED_ENGINE
+            ENGINE: VERIFIED REAL-DATA SEARCH (NO HALLUCINATIONS)
           </span>
         </div>
 

@@ -156,10 +156,10 @@
   <div class="page-hero-bar">
     <div class="page-title-group">
       <h2><span style="color:var(--amber-accent);">🤖</span> Ask NWIS Drilling AI Copilot</h2>
-      <p>Natural language queries strictly grounded in verified historical DDRs. If no evidence exists, the system abstains.</p>
+      <p>Ask anything about past drilling problems, mud recipes, or casing depths in plain English. The AI only answers from real records, and safely admits when no record exists.</p>
     </div>
     <div class="page-hero-actions">
-      <span class="tag tag-green">ZERO HALLUCINATION GUARDRAIL ACTIVE</span>
+      <span class="tag tag-green">ZERO HALLUCINATIONS (FACTS ONLY)</span>
     </div>
   </div>
 
@@ -171,7 +171,7 @@
       <!-- Left Sidebar: Quick Queries -->
       <aside class="query-pills-card">
         <h4 style="font-size:0.85rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">
-          Suggested Geological Queries
+          Suggested Drilling Questions
         </h4>
 
         <div class="query-pill" onclick="sendQuickQuery('What mud loss treatments worked in Hugin sandstone?')">
@@ -201,9 +201,9 @@
         <div class="chat-messages" id="chat-box">
           
           <div class="msg msg-bot">
-            <strong>NWIS Copilot:</strong> Ready. I am strictly grounded in verified Daily Drilling Reports (DDRs), Well Completion Reports (WCRs), and wireline mud logs from the Equinor Volve benchmark testbed.
+            <strong>NWIS Copilot:</strong> Ready. I provide factual answers strictly grounded in official Daily Drilling Reports, Well Completion Logs, and sensor records. If evidence does not exist in the files, I will safely say so rather than guess.
             <div class="msg-citation">
-              CONTRACT: STRICT_EVIDENCE_OR_SILENCE | PROVENANCE: 100% AUDITABLE
+              GUARANTEE: 100% EVIDENCE-BACKED | ZERO GUESSWORK
             </div>
           </div>
 

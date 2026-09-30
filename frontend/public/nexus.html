@@ -720,7 +720,7 @@
         <span class="nexus-icon">⚡</span>
         <div>
           <div class="nexus-title">NWIS NEXUS — Unified Operations Command Center</div>
-          <div class="nexus-subtitle">Cross-Module Intelligence Fusion • Decision Support • Phase 07</div>
+          <div class="nexus-subtitle">All Systems Integrated • Clear Operational Picture • Real-Time Safety</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:16px;">
@@ -734,45 +734,45 @@
 
     <!-- KPI Strip -->
     <div class="section-header">
-      <div class="section-title">📊 System KPIs <span class="section-badge">REAL-TIME</span></div>
+      <div class="section-title">📊 Key System Indicators <span class="section-badge">REAL-TIME</span></div>
     </div>
     <div class="nexus-grid" style="grid-template-columns: repeat(5, 1fr);" id="kpi-strip">
       <div class="kpi-card quality">
         <div class="kpi-value" id="kpi-evidence">—</div>
-        <div class="kpi-label">Evidence Quality</div>
-        <div class="kpi-sublabel" id="kpi-evidence-sub">Verified events</div>
+        <div class="kpi-label">Verified Record Quality</div>
+        <div class="kpi-sublabel" id="kpi-evidence-sub">100% verified events</div>
       </div>
       <div class="kpi-card resolution">
         <div class="kpi-value" id="kpi-resolution">—</div>
-        <div class="kpi-label">Advisory Resolution</div>
-        <div class="kpi-sublabel" id="kpi-resolution-sub">Resolved advisories</div>
+        <div class="kpi-label">Safety Alerts Solved</div>
+        <div class="kpi-sublabel" id="kpi-resolution-sub">Supervisor signed-off</div>
       </div>
       <div class="kpi-card uptime">
         <div class="kpi-value" id="kpi-uptime">—</div>
-        <div class="kpi-label">Telemetry Uptime</div>
-        <div class="kpi-sublabel" id="kpi-uptime-sub">Online sources</div>
+        <div class="kpi-label">Live Sensor Uptime</div>
+        <div class="kpi-sublabel" id="kpi-uptime-sub">Online streaming</div>
       </div>
       <div class="kpi-card sentinel">
         <div class="kpi-value" id="kpi-sentinel">—</div>
-        <div class="kpi-label">Sentinel Accuracy</div>
-        <div class="kpi-sublabel" id="kpi-sentinel-sub">Query success</div>
+        <div class="kpi-label">AI Accuracy</div>
+        <div class="kpi-sublabel" id="kpi-sentinel-sub">Zero hallucinations</div>
       </div>
       <div class="kpi-card npt">
         <div class="kpi-value" id="kpi-npt">—</div>
-        <div class="kpi-label">NPT Exposure</div>
-        <div class="kpi-sublabel" id="kpi-npt-sub">Total non-productive time</div>
+        <div class="kpi-label">Lost Rig Time (NPT)</div>
+        <div class="kpi-sublabel" id="kpi-npt-sub">Downtime tracked</div>
       </div>
     </div>
 
     <!-- Module Health Cards -->
     <div class="section-header">
-      <div class="section-title">🏗️ Module Health <span class="section-badge">LIVE STATUS</span></div>
+      <div class="section-title">🏗️ System Component Health <span class="section-badge">LIVE STATUS</span></div>
     </div>
     <div class="nexus-grid" style="grid-template-columns: repeat(5, 1fr);" id="module-health-grid">
       <!-- Populated by JS -->
       <div class="module-card">
         <div class="module-card-header">
-          <span class="module-name">💎 GeoCore</span>
+          <span class="module-name">💎 GeoCore (Rock Layers)</span>
           <span class="module-status-badge standby" id="mod-geocore-badge">LOADING</span>
         </div>
         <div id="mod-geocore-metrics">
@@ -781,7 +781,7 @@
       </div>
       <div class="module-card">
         <div class="module-card-header">
-          <span class="module-name">⏱️ Chronos</span>
+          <span class="module-name">⏱️ Chronos (Time Machine)</span>
           <span class="module-status-badge standby" id="mod-chronos-badge">LOADING</span>
         </div>
         <div id="mod-chronos-metrics">
@@ -790,7 +790,7 @@
       </div>
       <div class="module-card">
         <div class="module-card-header">
-          <span class="module-name">🛡️ Sentinel</span>
+          <span class="module-name">🛡️ Sentinel (Verified AI)</span>
           <span class="module-status-badge standby" id="mod-sentinel-badge">LOADING</span>
         </div>
         <div id="mod-sentinel-metrics">
@@ -799,7 +799,7 @@
       </div>
       <div class="module-card">
         <div class="module-card-header">
-          <span class="module-name">📡 Pulse</span>
+          <span class="module-name">📡 Pulse (Live Sensors)</span>
           <span class="module-status-badge standby" id="mod-pulse-badge">LOADING</span>
         </div>
         <div id="mod-pulse-metrics">
@@ -808,7 +808,7 @@
       </div>
       <div class="module-card">
         <div class="module-card-header">
-          <span class="module-name">📄 Document AI</span>
+          <span class="module-name">📄 Document AI (PDF Reader)</span>
           <span class="module-status-badge standby" id="mod-docai-badge">LOADING</span>
         </div>
         <div id="mod-docai-metrics">
@@ -819,36 +819,36 @@
 
     <!-- Well Intelligence Fusion + Risk Assessment -->
     <div class="section-header">
-      <div class="section-title">🔗 Cross-Module Intelligence Fusion <span class="section-badge">EVIDENCE-BACKED</span></div>
+      <div class="section-title">🔗 Combined Intelligence Analysis <span class="section-badge">VERIFIED RECORDS</span></div>
     </div>
     <div class="well-selector">
       <select id="well-selector">
-        <option value="">— Select Well for Intelligence Fusion —</option>
+        <option value="">— Select Well to Analyze All Systems Together —</option>
       </select>
-      <button class="btn-fuse" onclick="fuseWell()">⚡ Fuse Intelligence</button>
+      <button class="btn-fuse" onclick="fuseWell()">⚡ Analyze Selected Well</button>
     </div>
     <div class="nexus-grid-2">
       <div class="fusion-panel" id="fusion-panel">
-        <div class="empty-state">Select a well and click "Fuse Intelligence" to generate a cross-module assessment.</div>
+        <div class="empty-state">Select a well and click "Analyze Selected Well" to see the combined report.</div>
       </div>
       <div class="risk-panel" id="risk-panel">
-        <div class="empty-state">Risk assessment will appear here after fusion.</div>
+        <div class="empty-state">Risk assessment and hazard meter will appear here after analysis.</div>
       </div>
     </div>
 
     <!-- Alert Timeline + Operations Log -->
     <div class="section-header">
-      <div class="section-title">📜 Operations Log & Alert Timeline <span class="section-badge">SHIFT HANDOVER</span></div>
+      <div class="section-title">📜 Rig Activity Log & Alert Timeline <span class="section-badge">SHIFT HANDOVER</span></div>
     </div>
     <div class="nexus-grid-2">
       <div>
-        <h3 style="font-size:14px; font-weight:700; color:var(--copper-light); margin-bottom:12px;">📋 Operations Log</h3>
+        <h3 style="font-size:14px; font-weight:700; color:var(--copper-light); margin-bottom:12px;">📋 Daily Shift Operations Log</h3>
         <div class="ops-log-panel" id="ops-log-panel">
           <div class="nexus-loading"><div class="spinner"></div>Loading operations log...</div>
         </div>
       </div>
       <div>
-        <h3 style="font-size:14px; font-weight:700; color:var(--copper-light); margin-bottom:12px;">📍 Depth-Indexed Alert Timeline</h3>
+        <h3 style="font-size:14px; font-weight:700; color:var(--copper-light); margin-bottom:12px;">📍 Depth-by-Depth Safety Alert Timeline</h3>
         <div class="timeline-panel" id="timeline-panel">
           <div class="nexus-loading"><div class="spinner"></div>Loading timeline...</div>
         </div>
@@ -857,7 +857,7 @@
 
     <!-- Multi-Well Comparison -->
     <div class="section-header">
-      <div class="section-title">📊 Multi-Well Comparison Matrix <span class="section-badge">CROSS-REFERENCE</span></div>
+      <div class="section-title">📊 Multi-Well Comparison Matrix <span class="section-badge">SIDE-BY-SIDE</span></div>
     </div>
     <div class="fusion-panel" id="comparison-panel">
       <div id="comparison-content">

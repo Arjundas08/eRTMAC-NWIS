@@ -717,7 +717,7 @@
       <!-- Right Column: Signature Two-Layer Evidence Passport & Human Decision Drawer -->
       <div class="pulse-panel">
         <div class="panel-header">
-          <span class="panel-title">🛡️ Two-Layer Evidence Passport</span>
+          <span class="panel-title">🛡️ Two-Part Evidence Card</span>
           <span style="font-size: 0.72rem; color: #10B981; font-family: 'JetBrains Mono', monospace;">AUDIT VERIFIED</span>
         </div>
 
@@ -725,23 +725,23 @@
           <!-- Layer A: Live Telemetry Evidence -->
           <div class="passport-layer">
             <div class="passport-layer-title title-layer-a">
-              <span>●</span> LAYER A — CURRENT TELEMETRY EVIDENCE
+              <span>●</span> PART 1 — CURRENT RIG SENSOR EVIDENCE
             </div>
             <div class="passport-kv-grid">
               <div class="passport-kv">
-                <span class="passport-k">Channel Triggered</span>
-                <span class="passport-v" id="pp-layer-a-ch">FLOW_OUT</span>
+                <span class="passport-k">Sensor Triggered</span>
+                <span class="passport-v" id="pp-layer-a-ch">MUD FLOW OUT</span>
               </div>
               <div class="passport-kv">
-                <span class="passport-k">Measured Value</span>
+                <span class="passport-k">Live Value</span>
                 <span class="passport-v" id="pp-layer-a-val">95.8 %</span>
               </div>
               <div class="passport-kv">
-                <span class="passport-k">Variance / Delta</span>
-                <span class="passport-v" style="color: #F87171;" id="pp-layer-a-delta">-4.2% Deficit</span>
+                <span class="passport-k">Sensor Deficit</span>
+                <span class="passport-v" style="color: #F87171;" id="pp-layer-a-delta">-4.2% Mud Loss</span>
               </div>
               <div class="passport-kv">
-                <span class="passport-k">Rule Specification</span>
+                <span class="passport-k">Safety Rule</span>
                 <span class="passport-v" id="pp-layer-a-rule">RULE_LOSS_DETECTION_v2.0</span>
               </div>
             </div>
@@ -750,24 +750,24 @@
           <!-- Layer B: Verified Historical Evidence -->
           <div class="passport-layer">
             <div class="passport-layer-title title-layer-b">
-              <span>●</span> LAYER B — VERIFIED HISTORICAL EVIDENCE
+              <span>●</span> PART 2 — VERIFIED PAST WELL RECORD
             </div>
             <div class="passport-kv-grid">
               <div class="passport-kv">
-                <span class="passport-k">Offset Wellbore</span>
+                <span class="passport-k">Nearby Past Well</span>
                 <span class="passport-v" id="pp-layer-b-well">NO 15/9-F-14</span>
               </div>
               <div class="passport-kv">
-                <span class="passport-k">Historical Depth</span>
+                <span class="passport-k">Subsea Depth</span>
                 <span class="passport-v" id="pp-layer-b-depth">2,322.0 m TVDSS</span>
               </div>
               <div class="passport-kv">
-                <span class="passport-k">Incident Category</span>
-                <span class="passport-v" id="pp-layer-b-event">LOST_CIRCULATION</span>
+                <span class="passport-k">Past Incident</span>
+                <span class="passport-v" id="pp-layer-b-event">LOST CIRCULATION</span>
               </div>
               <div class="passport-kv">
-                <span class="passport-k">Provenance Tier</span>
-                <span class="passport-v" style="color: #34D399;">ORIGINAL_VERIFIED</span>
+                <span class="passport-k">Source Verification</span>
+                <span class="passport-v" style="color: #34D399;">100% ORIGINAL LOG</span>
               </div>
             </div>
 
@@ -784,12 +784,12 @@
         <div class="action-controls">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.78rem; font-weight: 700; color: var(--copper-bright); text-transform: uppercase;">
-              Superintendent Decision Authority
+              Supervisor Decision Sign-Off (Human in the Loop)
             </span>
             <span style="font-size: 0.7rem; color: var(--text-muted);" id="adv-state-pill">STATUS: NEW</span>
           </div>
 
-          <textarea class="action-input" id="driller-comments" placeholder="Enter engineering justification or mitigative action taken (e.g., 'Flow check positive, LCM pill prepared...')."></textarea>
+          <textarea class="action-input" id="driller-comments" placeholder="Enter engineering action taken (e.g., 'Flow check positive, prepared LCM loss pill...')."></textarea>
 
           <div class="action-btn-row">
             <button class="btn-pulse btn-ack" onclick="submitAdvisoryAction('ACKNOWLEDGE')">
@@ -799,7 +799,7 @@
               🛡️ Resolve
             </button>
             <button class="btn-pulse btn-suppress" onclick="submitAdvisoryAction('SUPPRESS')">
-              Suppress
+              Dismiss
             </button>
           </div>
         </div>

@@ -366,20 +366,20 @@
     <div class="chronos-header-strip">
       <div>
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-          <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0;">NWIS CHRONOS: HISTORICAL REPLAY LABORATORY</h2>
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0;">NWIS CHRONOS: DRILLING TIME MACHINE & REPLAY</h2>
           <span class="chronos-badge">Production Ready</span>
         </div>
         <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0;">
-          Deterministic Point-in-Time Historical Simulation &bull; Zero Future-Information Leakage &bull; Independent LOWO Verification
+          Second-by-Second Drilling Replay &bull; Strictly Blocks Future Data &bull; Proven on Real Field Incidents
         </p>
       </div>
       <div style="display: flex; align-items: center; gap: 14px;">
         <div class="firewall-status-pill" id="firewall-pill">
           <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #4CAF50;"></span>
-          FIREWALL: LOCKED (AUG 2, 2008)
+          TIME FIREWALL: ACTIVE (BLOCKS FUTURE DATA)
         </div>
         <button class="btn-chronos-outline" onclick="openTransparencyModal()">
-          🔍 What Engineer Could Have Known
+          🔍 What Engineers Knew at that Time
         </button>
       </div>
     </div>
@@ -390,7 +390,7 @@
       <!-- PANEL 1: Replay Setup & Wellbore Eligibility -->
       <div class="chronos-panel">
         <div class="panel-title">
-          <span>⚙️ Replay Configuration</span>
+          <span>⚙️ Replay Settings</span>
           <span class="evidence-tag" id="eligibility-tier-tag">DEPTH_INDEXED</span>
         </div>
 
@@ -400,17 +400,17 @@
             NO-15/9-F-14 (Equinor Volve)
           </div>
           <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;" id="lbl-spud-date">
-            Spud: 2008-08-02 &bull; TD: 3728.0 m MD
+            Spud: 2008-08-02 &bull; Total Depth: 3728.0 m MD
           </div>
         </div>
 
         <div style="margin-bottom: 14px;">
-          <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 6px;">REPLAY SECTION START (MD)</label>
+          <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 6px;">REPLAY START DEPTH (MD)</label>
           <input type="number" id="input-start-md" value="2650" step="50" style="width: 100%; background: var(--bg-chronos-card); border: 1px solid var(--border-subtle); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
         </div>
 
         <div style="margin-bottom: 14px;">
-          <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 6px;">LOOK-AHEAD WINDOW</label>
+          <label style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 6px;">LOOK-AHEAD SCAN DISTANCE</label>
           <select id="select-lookahead" style="width: 100%; background: var(--bg-chronos-card); border: 1px solid var(--border-subtle); color: #fff; padding: 8px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">
             <option value="50">50 meters (Near Bit)</option>
             <option value="100" selected>100 meters (Standard)</option>
@@ -431,10 +431,10 @@
         <!-- Eligibility Registry Summary -->
         <div style="background: var(--bg-chronos-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px; margin-top: auto;">
           <div style="font-size: 0.75rem; font-weight: 700; color: var(--copper-bright); margin-bottom: 6px;">
-            📋 REPLAY ELIGIBILITY AUDIT
+            📋 AVAILABLE HISTORICAL DATA
           </div>
           <div style="font-size: 0.76rem; color: var(--text-muted); line-height: 1.4;" id="eligibility-audit-text">
-            Surveys: 8 stations verified &bull; Tops: 5 formations &bull; Prior offsets available: 2 (F-12, F-4). Pioneers and future wells strictly isolated.
+            Surveys: 8 stations verified &bull; Tops: 5 formations &bull; Prior offsets available: 2 (F-12, F-4). Future wells are strictly isolated.
           </div>
         </div>
       </div>
@@ -569,14 +569,14 @@
     <!-- BOTTOM PANEL: Fair 3-Way Baseline Comparison & Independent LOWO Benchmark -->
     <div class="chronos-panel">
       <div class="panel-title">
-        <span>📊 Independent Performance Validation — Leave-One-Well-Out (LOWO) Benchmark</span>
+        <span>📊 Performance Validation — Historical Blind Well Benchmark (LOWO)</span>
         <button class="btn-chronos" style="font-size: 0.78rem; padding: 6px 12px;" onclick="runIndependentEvaluation()">
-          ⚡ Run Leave-One-Well-Out Evaluation
+          ⚡ Run Blind Well Evaluation
         </button>
       </div>
 
       <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0; margin-bottom: 12px;">
-        Strict retrospective leave-one-well-out protocol freezing historical memory to each well's spud date. Compares NWIS GeoCore + Chronos against fair geographical proximity and formation-only baselines.
+        Rigorous blind testing: we hide the well's future data and test whether NWIS predicts hazards before they happen. Compares NWIS against basic distance-only maps and depth-only methods.
       </p>
 
       <table class="baseline-table">
